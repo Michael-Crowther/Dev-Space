@@ -1,3 +1,7 @@
 export default function Home() {
-  return <div className="flex justify-center">Home page</div>;
+  return (
+    <div className="w-screen bg-page flex items-center justify-center text-primary">
+      Direct messages page
+    </div>
+  );
 }
