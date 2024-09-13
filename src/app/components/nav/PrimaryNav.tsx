@@ -1,8 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Tooltip from "@/components/ui/tooltip";
-import { ReactNode } from "react";
-import DiscordIcon from "../../../public/discord-icon-svgrepo-com.svg";
+import { ReactNode, useEffect, useState } from "react";
+import DiscordIcon from "../../../../public/discord-icon-svgrepo-com.svg";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 
@@ -41,6 +41,16 @@ function PrimaryNavButton({ icon, tooltip }: PrimaryNavButtonProps) {
 
 function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Ensures this component renders only after the client has mounted
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // Avoid rendering the button on the server
+  }
 
   function handleTheme() {
     if (theme === "light") {

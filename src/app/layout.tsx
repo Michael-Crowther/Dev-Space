@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import "../../globals.css";
 import { ThemeProvider } from "next-themes";
 import PrimaryNav from "./components/nav/PrimaryNav";
 import SecondaryNav from "./components/nav/SecondaryNav";
