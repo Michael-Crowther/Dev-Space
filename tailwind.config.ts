@@ -32,6 +32,9 @@ const config: Config = {
         bgnav: {
           DEFAULT: "hsl(var(--background-nav))",
         },
+        bgprofilenav: {
+          DEFAULT: "hsl(var(--background-profile-nav))",
+        },
         page: {
           DEFAULT: "hsl(var(--page))",
         },

@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import Tooltip from "@/components/ui/tooltip";
 import { ReactNode, useEffect, useState } from "react";
-import DiscordIcon from "../../../../public/discord-icon-svgrepo-com.svg";
+import DiscordIcon from "../../../public/discord-icon-svgrepo-com.svg";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 

@@ -6,8 +6,11 @@ const users = sqliteTable("users", {
     .primaryKey()
     .$default(() => createId()),
   name: text("name").notNull(),
-  username: text("username").notNull(),
+  username: text("username").notNull().unique(),
+  displayName: text("display_name"),
   email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  dateOfBirth: integer("date_of_birth", { mode: "timestamp" }).notNull(),
   passwordHash: text("password_hash").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
