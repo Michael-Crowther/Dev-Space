@@ -1,10 +1,15 @@
 "use client";
+import { cn } from "@/lib/utils";
 import { handleLogin } from "@/server/auth/login";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+
+  const inputStyle = cn(
+    "bg-zinc-900 h-10 rounded-sm mt-1 focus:outline-none px-3"
+  );
 
   return (
     <div className="w-full h-screen flex justify-center items-center">
@@ -16,18 +21,15 @@ export default function Login() {
         <form
           className="flex flex-col w-2/3"
           action={handleLogin}
-          onSubmit={() => setLoading(true)}
+          onSubmit={() => {
+            setLoading(true);
+          }}
         >
           <label className="flex flex-col my-4">
             <span className="text-gray-400">
-              Email or Phone Number <span className="text-red-500">*</span>
+              Email <span className="text-red-500">*</span>
             </span>
-            <input
-              type="text"
-              name="emailPhone"
-              required
-              className="bg-zinc-900 h-10 rounded-sm mt-1 focus:outline-none px-3"
-            />
+            <input type="text" name="email" required className={inputStyle} />
           </label>
           <label className="flex flex-col mb-4">
             <span className="text-gray-400">
@@ -37,7 +39,7 @@ export default function Login() {
               type="password"
               name="password"
               required
-              className="bg-zinc-900 h-10 rounded-sm mt-1 focus:outline-none px-3"
+              className={inputStyle}
             />
             <a href="" className="text-sm text-brand mt-1 hover:underline">
               Forgot your password?
@@ -53,7 +55,7 @@ export default function Login() {
           </button>
           <div className="flex items-center space-x-1 text-sm mt-2">
             <p className="text-gray-400">Need an account?</p>
-            <a href="" className="text-brand hover:underline">
+            <a href="/register" className="text-brand hover:underline">
               Register
             </a>
           </div>
@@ -62,7 +64,3 @@ export default function Login() {
     </div>
   );
 }
-
-// export function Register() {
-//   return <div>Register form</div>;
-// }

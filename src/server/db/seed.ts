@@ -34,7 +34,6 @@ async function seed() {
       username: "michael-crowther",
       email: "md.crowther@yahoo.com",
       passwordHash,
-      phone: "503-412-9620",
       dateOfBirth: randomDate(),
     },
     {
@@ -42,7 +41,6 @@ async function seed() {
       username: "billy-bob",
       email: "billy.bob@yahoo.com",
       passwordHash,
-      phone: "234-768-0945",
       dateOfBirth: randomDate(),
     },
   ]);

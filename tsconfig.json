@@ -21,6 +21,13 @@
       "@/*": ["./src/*"]
     }
   },
+
+  /* Linting */
+  "strict": true,
+  "noUnusedLocals": true,
+  "noUnusedParameters": false,
+  "noFallthroughCasesInSwitch": true,
+
   "include": [
     "next-env.d.ts",
     "**/*.ts",

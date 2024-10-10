@@ -1,10 +1,11 @@
+import { validateRequest } from "@/server/auth/validation";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  //const { user, session } = await uncachedValidateRequest();
+  const { user, session } = await validateRequest();
 
-  return { ...opts };
+  return { user, session, ...opts };
 };
 
 export type Context = Awaited<ReturnType<typeof createTRPCContext>>;

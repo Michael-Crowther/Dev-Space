@@ -2,14 +2,14 @@
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { isPasswordMatch } from "@/server/utils/bcrypt";
-import { eq, or } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { lucia } from "./lucia";
 import { cookies } from "next/headers";
 
 const loginSchema = z.object({
-  emailPhone: z.string().min(1, "Email or Phone Number is required").trim(),
+  email: z.string().trim().email().toLowerCase(),
   password: z.string().min(1, "Password is required").trim(),
 });
 
@@ -24,10 +24,11 @@ export async function handleLogin(formData: FormData) {
     throw new Error("Invalid cridentials");
   }
 
-  const { emailPhone, password } = parsedData.data;
+  const { email, password } = parsedData.data;
 
   const user = await db.query.users.findFirst({
-    where: or(eq(users.phone, emailPhone), eq(users.email, emailPhone)),
+    columns: { id: true, name: true, passwordHash: true },
+    where: eq(users.email, email),
   });
 
   if (!user) {
@@ -47,5 +48,7 @@ export async function handleLogin(formData: FormData) {
     sessionCookie.value,
     sessionCookie.attributes
   );
-  return redirect("/");
+
+  redirect("/");
+  // return { message: `Hi, ${user.name}!` };
 }
