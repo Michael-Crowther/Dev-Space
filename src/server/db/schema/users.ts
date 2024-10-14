@@ -8,7 +8,7 @@ const users = sqliteTable("users", {
   name: text("name").notNull(),
   username: text("username").notNull().unique(),
   displayName: text("display_name"),
-  email: text("email").notNull(),
+  email: text("email").notNull().unique(),
   dateOfBirth: integer("date_of_birth", { mode: "timestamp" }).notNull(),
   passwordHash: text("password_hash").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })

@@ -1,11 +1,31 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { handleLogin } from "@/server/auth/login";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
 export default function Login() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+
+    const data = new FormData(e.currentTarget);
+
+    try {
+      await handleLogin(data);
+      router.push("/");
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    }
+  }
 
   const inputStyle = cn(
     "bg-zinc-900 h-10 rounded-sm mt-1 focus:outline-none px-3"
@@ -18,22 +38,32 @@ export default function Login() {
         <p className="text-muted-foreground">
           {`We're so excited to see you again!`}
         </p>
-        <form
-          className="flex flex-col w-2/3"
-          action={handleLogin}
-          onSubmit={() => {
-            setLoading(true);
-          }}
-        >
+        <form className="flex flex-col w-2/3" onSubmit={handleSubmit}>
           <label className="flex flex-col my-4">
             <span className="text-gray-400">
-              Email <span className="text-red-500">*</span>
+              Email{" "}
+              <span className="text-red-500">
+                *{" "}
+                {!!error && (
+                  <span className="italic text-xs">
+                    Email or password is invalid
+                  </span>
+                )}
+              </span>
             </span>
             <input type="text" name="email" required className={inputStyle} />
           </label>
           <label className="flex flex-col mb-4">
             <span className="text-gray-400">
-              Password <span className="text-red-500">*</span>
+              Password{" "}
+              <span className="text-red-500">
+                *{" "}
+                {!!error && (
+                  <span className="italic text-xs">
+                    Email or password is invalid
+                  </span>
+                )}
+              </span>
             </span>
             <input
               type="password"
@@ -41,9 +71,9 @@ export default function Login() {
               required
               className={inputStyle}
             />
-            <a href="" className="text-sm text-brand mt-1 hover:underline">
+            {/* <a href="" className="text-sm text-brand mt-1 hover:underline">
               Forgot your password?
-            </a>
+            </a> */}
           </label>
 
           <button

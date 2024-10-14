@@ -82,6 +82,9 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      animation: {
+        "spin-slow": "spin 1s ease-in-out 0.1s",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

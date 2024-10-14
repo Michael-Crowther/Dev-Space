@@ -2,7 +2,7 @@ import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
 import { createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
 
-import type { AppRouter } from "@/server/api/trpc/appRouter";
+import type { AppRouter } from "@/server/api/trpc/routers/appRouter";
 
 const { NEXT_PUBLIC_FRONTEND_URL } = process.env;
 const url = NEXT_PUBLIC_FRONTEND_URL || "/api/trpc";

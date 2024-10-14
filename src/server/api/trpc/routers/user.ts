@@ -11,7 +11,17 @@ export const userRouter = router({
   loggedIn: procedure.query(async ({ ctx: { user } }) => {
     if (user) {
       return await db.query.users.findFirst({
-        where: eq(users.id, user?.id),
+        columns: {
+          id: true,
+          name: true,
+          username: true,
+          displayName: true,
+          email: true,
+          dateOfBirth: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        where: eq(users.id, user.id),
       });
     }
   }),

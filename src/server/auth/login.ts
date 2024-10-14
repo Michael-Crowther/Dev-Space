@@ -3,7 +3,6 @@ import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { isPasswordMatch } from "@/server/utils/bcrypt";
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { lucia } from "./lucia";
 import { cookies } from "next/headers";
@@ -12,6 +11,8 @@ const loginSchema = z.object({
   email: z.string().trim().email().toLowerCase(),
   password: z.string().min(1, "Password is required").trim(),
 });
+
+export type Login = z.infer<typeof loginSchema>;
 
 export async function handleLogin(formData: FormData) {
   "use server";
@@ -49,6 +50,5 @@ export async function handleLogin(formData: FormData) {
     sessionCookie.attributes
   );
 
-  redirect("/");
-  // return { message: `Hi, ${user.name}!` };
+  return { message: `Hi, ${user.name}!` };
 }

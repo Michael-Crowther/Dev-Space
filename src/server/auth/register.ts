@@ -1,10 +1,8 @@
 "use server";
-
 import { z } from "zod";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { getHashedPassword } from "../utils/bcrypt";
-import { redirect } from "next/navigation";
 
 const registerSchema = z.object({
   firstName: z.string().trim(),
@@ -23,7 +21,7 @@ export async function handleRegister(formData: FormData) {
   );
 
   if (!parsedData.success) {
-    throw new Error("Invalid form fields");
+    throw new Error(JSON.stringify(parsedData.error.format()));
   }
 
   const { firstName, lastName, email, displayName, username, password } =
@@ -43,6 +41,5 @@ export async function handleRegister(formData: FormData) {
     updatedAt: now,
   });
 
-  redirect("/login");
-  //   return { message: "Your account was successfully created" };
+  return { message: "Your account was successfully created" };
 }

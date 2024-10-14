@@ -16,7 +16,7 @@ import SuperJSON from "superjson";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { createTRPCReact } from "@trpc/react-query";
 import { toast } from "sonner";
-import { type AppRouter } from "@/server/api/trpc/appRouter";
+import { type AppRouter } from "@/server/api/trpc/routers/appRouter";
 import { useRouter } from "next/navigation";
 
 export const api = createTRPCReact<AppRouter>();
