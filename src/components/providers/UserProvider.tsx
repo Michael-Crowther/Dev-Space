@@ -2,7 +2,7 @@
 
 import { api } from "@/app/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { createContext, ReactNode, useContext } from "react";
 import { ClipLoader } from "react-spinners";
 
@@ -14,6 +14,7 @@ export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const currentPath = usePathname();
 
   const { data: user, isLoading } = api.base.user.loggedIn.useQuery();
 
@@ -21,7 +22,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return <ClipLoader />;
   }
 
-  if (!user) {
+  if (!user && currentPath !== "/login") {
     router.push("/login");
   }
 
