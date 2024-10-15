@@ -4,6 +4,8 @@ import "../../globals.css";
 import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { UserProvider } from "@/components/providers/UserProvider";
+// import { validateRequest } from "@/server/auth/validation";
+// import { redirect } from "next/navigation";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,6 +28,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const { user } = await validateRequest();
+
+  // if (!user) {
+  //   redirect("/login");
+  // }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
