@@ -5,11 +5,12 @@ import { useState } from "react";
 import { Mic, MicOff, Headphones, HeadphoneOff, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 import { useUser } from "../providers/UserProvider";
+import Link from "next/link";
 
 export function ProfileNav() {
   const [mute, setMute] = useState(false);
   const [deafen, setDeafen] = useState(false);
-  const user = useUser();
+  const { user } = useUser();
 
   const { displayName, username } = user;
 
@@ -50,9 +51,9 @@ export function ProfileNav() {
           onClick={handleMute}
         >
           {mute ? (
-            <MicOff size={20} className="text-red-500" />
+            <MicOff className="text-red-500 size-5" />
           ) : (
-            <Mic size={20} />
+            <Mic className="size-5" />
           )}
         </Button>
         <Button
@@ -62,13 +63,20 @@ export function ProfileNav() {
           onClick={handleDeafen}
         >
           {deafen ? (
-            <HeadphoneOff size={20} className="text-red-500" />
+            <HeadphoneOff className="text-red-500 size-5" />
           ) : (
-            <Headphones size={20} />
+            <Headphones className="size-5" />
           )}
         </Button>
-        <Button size="icon" variant="ghost" className="group hover:bg-page">
-          <Settings size={20} className="group-hover:animate-spin-slow" />
+        <Button
+          size="icon"
+          variant="ghost"
+          className="group hover:bg-page"
+          asChild
+        >
+          <Link href="/settings">
+            <Settings className="group-hover:animate-spin-slow size-5" />
+          </Link>
         </Button>
       </section>
     </section>

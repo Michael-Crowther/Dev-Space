@@ -8,8 +8,11 @@ const registerSchema = z.object({
   firstName: z.string().trim(),
   lastName: z.string().trim(),
   email: z.string().trim().email().toLowerCase(),
-  displayName: z.string().trim(),
-  username: z.string().trim(),
+  displayName: z
+    .string()
+    .max(20, "Display name must be 20 characters or less")
+    .trim(),
+  username: z.string().max(20, "Username must be 20 characters or less").trim(),
   password: z.string().min(1, "Password is required").trim(),
 });
 

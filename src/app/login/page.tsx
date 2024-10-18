@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { handleLogin } from "@/server/auth/login";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { BeatLoader } from "react-spinners";
@@ -85,9 +86,9 @@ export default function Login() {
           </button>
           <div className="flex items-center space-x-1 text-sm mt-2">
             <p className="text-gray-400">Need an account?</p>
-            <a href="/register" className="text-brand hover:underline">
+            <Link href="/register" className="text-brand hover:underline">
               Register
-            </a>
+            </Link>
           </div>
         </form>
       </div>

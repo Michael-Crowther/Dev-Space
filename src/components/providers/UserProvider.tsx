@@ -2,32 +2,38 @@
 
 import { api } from "@/app/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useContext } from "react";
 import { ClipLoader } from "react-spinners";
 
 type UserContext = {
   user: UserProfile;
+  getUser: () => void;
 };
 
 export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const currentPath = usePathname();
 
-  const { data: user, isLoading } = api.base.user.loggedIn.useQuery();
+  const {
+    data: user,
+    isLoading,
+    refetch: getUser,
+  } = api.base.user.loggedIn.useQuery();
 
   if (isLoading) {
     return <ClipLoader />;
   }
 
-  if (!user && currentPath !== "/login") {
+  if (!user) {
     router.push("/login");
   }
 
   return (
-    <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ user, getUser }}>
+      {children}
+    </UserContext.Provider>
   );
 }
 
@@ -36,5 +42,6 @@ export function useUser() {
   if (!context || !context.user) {
     throw new Error("useUser must be used within a UserContextProvider");
   }
-  return context.user;
+  const { user, getUser } = context;
+  return { user, getUser };
 }

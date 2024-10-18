@@ -2,6 +2,7 @@ import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { procedure, router } from "../trpc";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 
 export const userRouter = router({
   all: procedure.query(async () => {
@@ -25,4 +26,30 @@ export const userRouter = router({
       });
     }
   }),
+
+  updateDisplayName: procedure
+    .input(z.object({ value: z.string() }))
+    .mutation(async ({ input: { value }, ctx: { user } }) => {
+      if (user) {
+        await db
+          .update(users)
+          .set({ displayName: value })
+          .where(eq(users.id, user.id));
+
+        return { message: "Display name was successfully changed." };
+      }
+    }),
+
+  updateUsername: procedure
+    .input(z.object({ value: z.string() }))
+    .mutation(async ({ input: { value }, ctx: { user } }) => {
+      if (user) {
+        await db
+          .update(users)
+          .set({ username: value })
+          .where(eq(users.id, user.id));
+
+        return { message: "Username was successfully changed." };
+      }
+    }),
 });

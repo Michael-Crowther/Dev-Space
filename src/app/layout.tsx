@@ -7,14 +7,9 @@ import { UserProvider } from "@/components/providers/UserProvider";
 import { validateRequest } from "@/server/auth/validation";
 import { redirect } from "next/navigation";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
+const whitneysemibold = localFont({
+  src: "./fonts/whitneysemibold.otf",
+  variable: "--font-whitney-light",
   weight: "100 900",
 });
 
@@ -36,9 +31,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
-      >
+      <body className={`${whitneysemibold.className} antialiased flex`}>
         <QueryProvider>
           <UserProvider>
             <ThemeProvider
