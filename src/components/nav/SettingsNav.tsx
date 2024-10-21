@@ -133,17 +133,18 @@ type SettingsButtonProps = {
 
 function SettingsButton({ label, path, isSelected }: SettingsButtonProps) {
   return (
-    <Button
-      key={path}
-      className={cn(
-        "w-full justify-start hover:bg-page h-8 text-primary opacity-70 text-md",
-        isSelected && "bg-page cursor-default opacity-100"
-      )}
-      variant="ghost"
-    >
-      <Link href={path}>{label}</Link>
-      <span className="flex-1" />
-      {path === "/login" && <LogOutIcon size={15} />}
+    <Button key={path} variant="ghost" asChild>
+      <Link
+        href={path}
+        className={cn(
+          "w-full justify-start hover:bg-page h-8 text-primary opacity-70 text-md rounded-md p-1 flex items-center",
+          isSelected && "bg-page cursor-default opacity-100"
+        )}
+      >
+        {label}
+        <span className="flex-1" />
+        {path === "/login" && <LogOutIcon size={15} />}
+      </Link>
     </Button>
   );
 }

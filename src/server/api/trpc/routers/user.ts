@@ -28,28 +28,54 @@ export const userRouter = router({
   }),
 
   updateDisplayName: procedure
-    .input(z.object({ value: z.string() }))
+    .input(
+      z.object({
+        value: z
+          .string()
+          .max(20, "Display name must be 20 characters or less")
+          .trim(),
+      })
+    )
     .mutation(async ({ input: { value }, ctx: { user } }) => {
       if (user) {
-        await db
-          .update(users)
-          .set({ displayName: value })
-          .where(eq(users.id, user.id));
+        try {
+          await db
+            .update(users)
+            .set({ displayName: value })
+            .where(eq(users.id, user.id));
 
-        return { message: "Display name was successfully changed." };
+          return { message: "Display name was successfully changed." };
+        } catch (error) {
+          if (error instanceof Error) {
+            return { message: error.message };
+          }
+        }
       }
     }),
 
   updateUsername: procedure
-    .input(z.object({ value: z.string() }))
+    .input(
+      z.object({
+        value: z
+          .string()
+          .max(20, "Username must be 20 characters or less")
+          .trim(),
+      })
+    )
     .mutation(async ({ input: { value }, ctx: { user } }) => {
       if (user) {
-        await db
-          .update(users)
-          .set({ username: value })
-          .where(eq(users.id, user.id));
+        try {
+          await db
+            .update(users)
+            .set({ username: value })
+            .where(eq(users.id, user.id));
 
-        return { message: "Username was successfully changed." };
+          return { message: "Username was successfully changed." };
+        } catch (error) {
+          if (error instanceof Error) {
+            return { message: error.message };
+          }
+        }
       }
     }),
 });

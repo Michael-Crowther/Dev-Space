@@ -3,13 +3,25 @@ import { SettingsNav } from "@/components/nav/SettingsNav";
 import { Button } from "@/components/ui/button";
 import { CircleX } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 export default function SettingsLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
+  useEffect(() => {
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") router.push("/");
+    }
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [router]);
+
   return (
-    <div className="h-screen flex w-full bg-page">
+    <div className="h-screen flex w-full bg-page focus:outline-none">
       <SettingsNav />
       <section className="p-8 w-[800px] h-full min-w-[600px]">
         {children}

@@ -1,8 +1,9 @@
 "use server";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { getHashedPassword } from "../utils/bcrypt";
+import { LibsqlError } from "@libsql/client";
 
 const registerSchema = z.object({
   firstName: z.string().trim(),
@@ -13,36 +14,43 @@ const registerSchema = z.object({
     .max(20, "Display name must be 20 characters or less")
     .trim(),
   username: z.string().max(20, "Username must be 20 characters or less").trim(),
-  password: z.string().min(1, "Password is required").trim(),
+  password: z.string().min(1).trim(),
 });
 
 export async function handleRegister(formData: FormData) {
   "use server";
 
-  const parsedData = registerSchema.safeParse(
-    Object.fromEntries(formData.entries())
-  );
+  try {
+    const data = registerSchema.parse(Object.fromEntries(formData.entries()));
 
-  if (!parsedData.success) {
-    throw new Error(JSON.stringify(parsedData.error.format()));
+    const { firstName, lastName, email, displayName, username, password } =
+      data;
+    const fullName = firstName + " " + lastName;
+    const now = new Date();
+    const passwordHash = await getHashedPassword(password);
+
+    await db.insert(users).values({
+      name: fullName,
+      email,
+      displayName,
+      username,
+      passwordHash,
+      dateOfBirth: now,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return { message: "Account was successfully created" };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const {
+        formErrors: { fieldErrors },
+      } = error;
+
+      return { zodErrors: fieldErrors };
+    }
+    if (error instanceof LibsqlError) {
+      return { sqlError: { error: error.name, message: error.message } };
+    }
   }
-
-  const { firstName, lastName, email, displayName, username, password } =
-    parsedData.data;
-  const fullName = firstName + " " + lastName;
-  const now = new Date();
-  const passwordHash = await getHashedPassword(password);
-
-  await db.insert(users).values({
-    name: fullName,
-    email,
-    displayName,
-    username,
-    passwordHash,
-    dateOfBirth: now,
-    createdAt: now,
-    updatedAt: now,
-  });
-
-  return { message: "Your account was successfully created" };
 }

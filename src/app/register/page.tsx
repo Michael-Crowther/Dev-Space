@@ -1,5 +1,5 @@
 "use client";
-
+// import { PrettyObject } from "@/components/utils/PrettyObject";
 import { cn } from "@/lib/utils";
 import { handleRegister } from "@/server/auth/register";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,8 @@ import { BeatLoader } from "react-spinners";
 export default function Register() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] =
+    useState<Record<string, string[] | string | undefined>>();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -17,14 +18,13 @@ export default function Register() {
 
     const data = new FormData(e.currentTarget);
 
-    try {
-      await handleRegister(data);
-      router.push("/login");
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-        setLoading(false);
-      }
+    const result = await handleRegister(data);
+
+    if (result) {
+      setLoading(false);
+      if (result.zodErrors) setErrors(result.zodErrors);
+      else if (result.sqlError) setErrors(result.sqlError);
+      else router.push("/login");
     }
   }
 
@@ -32,9 +32,12 @@ export default function Register() {
     "bg-zinc-900 h-10 rounded-sm mt-1 focus:outline-none px-3"
   );
 
+  const errorStyle = cn("text-red-500 italic text-sm mt-1");
+
   return (
     <div className="w-full h-screen flex justify-center items-center">
-      <div className="flex items-center justify-center rounded-lg shadow-lg w-[500px] h-[670px] bg-zinc-800 flex-col">
+      {/* <PrettyObject>{errors}</PrettyObject> */}
+      <div className="flex items-center justify-center rounded-lg shadow-lg w-[500px] h-[700px] bg-zinc-800 flex-col">
         <p className="font-bold text-2xl">Create an account</p>
         <form className="flex flex-col w-5/6" onSubmit={handleSubmit}>
           <div className="flex mt-2 space-x-3">
@@ -66,15 +69,24 @@ export default function Register() {
               Email{" "}
               <span className="text-red-500">
                 *{" "}
-                {!!error && error.includes("email") && (
-                  <span className="italic text-xs">Email is not valid</span>
+                {(errors?.email || errors?.message?.includes("email")) && (
+                  <p className={errorStyle}>
+                    {errors.email || "Email already exists"}
+                  </p>
                 )}
               </span>
             </span>
             <input type="text" name="email" required className={inputStyle} />
           </label>
           <label className="flex flex-col">
-            <span className="text-gray-400">Display Name</span>
+            <span className="text-gray-400">
+              Display Name{" "}
+              <span className="text-red-500">
+                {errors?.displayName && (
+                  <p className={errorStyle}>{errors.displayName}</p>
+                )}
+              </span>
+            </span>
             <input type="text" name="displayName" className={inputStyle} />
           </label>
           <label className="flex flex-col my-4">
@@ -82,10 +94,11 @@ export default function Register() {
               Username{" "}
               <span className="text-red-500">
                 *{" "}
-                {!!error && error.includes("username") && (
-                  <span className="italic text-xs">
-                    This username already exists
-                  </span>
+                {(errors?.username ||
+                  errors?.message?.includes("username")) && (
+                  <p className={errorStyle}>
+                    {errors.username || "Username already exists"}
+                  </p>
                 )}
               </span>
             </span>

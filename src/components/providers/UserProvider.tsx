@@ -2,7 +2,6 @@
 
 import { api } from "@/app/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
-import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useContext } from "react";
 import { ClipLoader } from "react-spinners";
 
@@ -14,8 +13,6 @@ type UserContext = {
 export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const router = useRouter();
-
   const {
     data: user,
     isLoading,
@@ -24,10 +21,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return <ClipLoader />;
-  }
-
-  if (!user) {
-    router.push("/login");
   }
 
   return (
@@ -40,7 +33,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
 export function useUser() {
   const context = useContext(UserContext);
   if (!context || !context.user) {
-    throw new Error("useUser must be used within a UserContextProvider");
+    throw new Error(
+      "useUser must be used within a UserContextProvider || user does not exist"
+    );
   }
   const { user, getUser } = context;
   return { user, getUser };
