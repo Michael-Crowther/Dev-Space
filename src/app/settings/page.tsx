@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { SimpleEditDialog } from "@/components/utils/SimpleEditDialog";
 import { format } from "date-fns";
 import { api } from "../api/trpc/util";
+import { ReactNode } from "react";
 
 export default function MyAccount() {
   const { user, getUser } = useUser();
@@ -48,17 +49,24 @@ export default function MyAccount() {
             <MyAccountSection
               header="DISPLAY NAME"
               value={displayName || "You haven't added a display name yet."}
-              allowEdit
-              onSubmit={(value) => updateDisplayName({ value })}
-              isPending={displayPending}
-            />
-            <MyAccountSection
-              header="USERNAME"
-              value={username}
-              allowEdit
-              onSubmit={(value) => updateUsername({ value })}
-              isPending={usernamePending}
-            />
+            >
+              <SimpleEditDialog
+                title="Edit Display Name"
+                fieldLabel="Display Name"
+                fieldValue={displayName || ""}
+                loading={displayPending}
+                onSubmit={(value) => updateDisplayName({ value })}
+              />
+            </MyAccountSection>
+            <MyAccountSection header="USERNAME" value={username}>
+              <SimpleEditDialog
+                title="Edit Username"
+                fieldLabel="Username"
+                fieldValue={username || ""}
+                loading={usernamePending}
+                onSubmit={(value) => updateUsername({ value })}
+              />
+            </MyAccountSection>
             <MyAccountSection header="EMAIL" value={email} />
           </Card>
         </div>
@@ -67,22 +75,14 @@ export default function MyAccount() {
   );
 }
 
-type MyAccountSectionProps =
-  | {
-      header: string;
-      value: string;
-      allowEdit: true;
-      isPending: boolean;
-      onSubmit: (value: string) => void;
-    }
-  | {
-      header: string;
-      value: string;
-      allowEdit?: false;
-    };
+type MyAccountSectionProps = {
+  header: string;
+  value: string;
+  children?: ReactNode;
+};
 
 function MyAccountSection(props: MyAccountSectionProps) {
-  const { header, value, allowEdit } = props;
+  const { header, value, children } = props;
 
   return (
     <section className="flex items-center">
@@ -91,15 +91,7 @@ function MyAccountSection(props: MyAccountSectionProps) {
         <p>{value}</p>
       </div>
       <span className="flex-1" />
-      {allowEdit && (
-        <SimpleEditDialog
-          title="Edit Display Name"
-          fieldLabel="Display Name"
-          fieldValue={value}
-          loading={props.isPending}
-          onSubmit={props.onSubmit}
-        />
-      )}
+      {children}
     </section>
   );
 }

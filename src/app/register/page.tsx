@@ -1,7 +1,7 @@
 "use client";
 // import { PrettyObject } from "@/components/utils/PrettyObject";
 import { cn } from "@/lib/utils";
-import { handleRegister } from "@/server/auth/register";
+import { handleRegister } from "@/server/actions/register";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { BeatLoader } from "react-spinners";

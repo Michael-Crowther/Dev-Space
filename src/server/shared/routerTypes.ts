@@ -6,4 +6,4 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
 
 //export type ItemType<T> = T extends Array<infer U> ? U : never;
 
-export type UserProfile = RouterOutputs["base"]["user"]["loggedIn"];
+export type UserProfile = RouterOutputs["base"]["user"]["getUser"];

@@ -60,6 +60,7 @@ export function SimpleEditDialog(props: SimpleEditDialogProps) {
       buttonTitle="Edit"
       trigger={trigger}
       mode="edit"
+      debug
       form={form}
       open={isOpen}
       onOpenChange={setIsOpen}

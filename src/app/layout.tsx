@@ -4,6 +4,7 @@ import "../../globals.css";
 import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { UserProvider } from "@/components/providers/UserProvider";
+import { SessionProvider } from "next-auth/react";
 
 const whitneysemibold = localFont({
   src: "./fonts/whitneysemibold.otf",
@@ -25,16 +26,18 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${whitneysemibold.className} antialiased flex`}>
         <QueryProvider>
-          <UserProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-            </ThemeProvider>
-          </UserProvider>
+          <SessionProvider>
+            <UserProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+              </ThemeProvider>
+            </UserProvider>
+          </SessionProvider>
         </QueryProvider>
       </body>
     </html>

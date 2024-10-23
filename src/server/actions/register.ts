@@ -26,7 +26,6 @@ export async function handleRegister(formData: FormData) {
     const { firstName, lastName, email, displayName, username, password } =
       data;
     const fullName = firstName + " " + lastName;
-    const now = new Date();
     const passwordHash = await getHashedPassword(password);
 
     await db.insert(users).values({
@@ -35,9 +34,7 @@ export async function handleRegister(formData: FormData) {
       displayName,
       username,
       passwordHash,
-      dateOfBirth: now,
-      createdAt: now,
-      updatedAt: now,
+      dateOfBirth: new Date(),
     });
 
     return { message: "Account was successfully created" };

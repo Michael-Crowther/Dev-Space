@@ -36,9 +36,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input, InputProps } from "../ui/input";
 import { cn } from "@/lib/utils";
+import { PrettyObject } from "./PrettyObject";
 
 type FormDialogProps<TFieldValues extends FieldValues> = {
-  //debug?: boolean;
+  debug?: boolean;
   mode: "create" | "edit";
   form: UseFormReturn<TFieldValues, unknown, undefined>;
   title: string;
@@ -58,7 +59,7 @@ function FormDialog<TFieldValues extends FieldValues>(
   const [discardChangesOpen, setDiscardChangesOpen] = useState(false);
   const {
     mode = "create",
-    //debug,
+    debug,
     form,
     title,
     buttonTitle,
@@ -134,11 +135,11 @@ function FormDialog<TFieldValues extends FieldValues>(
           </DialogHeader>
           <div className="grid flex-1 grid-cols-2 gap-4 overflow-auto px-4 py-2">
             {children}
-            {/* {debug && (
+            {debug && (
               <>
-                <Badge variant={isDirty ? "destructive" : "primary"}>
+                {/* <Badge variant={isDirty ? "destructive" : "primary"}>
                   form {isDirty ? "is" : "is not"} dirty
-                </Badge>
+                </Badge> */}
                 <PrettyObject>
                   {{
                     values: form.watch(),
@@ -147,7 +148,7 @@ function FormDialog<TFieldValues extends FieldValues>(
                   }}
                 </PrettyObject>
               </>
-            )} */}
+            )}
           </div>
           <DialogFooter className="gap-2 p-4 pt-2">
             {mode === "create" && (
