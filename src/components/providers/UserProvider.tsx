@@ -1,9 +1,9 @@
 "use client";
 import { api } from "@/app/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import { createContext, ReactNode, useContext } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 type UserContext = {
   user: UserProfile;
@@ -14,7 +14,6 @@ export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const { data: user, refetch: getUser } = api.base.user.getUser.useQuery(
     undefined,
@@ -22,16 +21,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       enabled: !!session?.user?.id,
     }
   );
-
-  useEffect(() => {
-    if (!session) {
-      router.push("/login");
-    }
-  }, [session, router]);
-
-  if (!session) {
-    return null;
-  }
 
   return (
     <UserContext.Provider value={{ user, getUser }}>
@@ -43,7 +32,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
 export function useUser() {
   const context = useContext(UserContext);
 
-  if (!context || !context.user) {
+  if (!context?.user) {
+    redirect("/login");
+  }
+
+  if (!context) {
     throw new Error(
       "useUser must be used within a UserContextProvider || user does not exist"
     );

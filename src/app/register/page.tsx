@@ -1,7 +1,7 @@
 "use client";
 // import { PrettyObject } from "@/components/utils/PrettyObject";
 import { cn } from "@/lib/utils";
-import { handleRegister } from "@/server/actions/register";
+import { register } from "@/server/actions/register";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { BeatLoader } from "react-spinners";
@@ -18,7 +18,7 @@ export default function Register() {
 
     const data = new FormData(e.currentTarget);
 
-    const result = await handleRegister(data);
+    const result = await register(data);
 
     if (result) {
       setLoading(false);

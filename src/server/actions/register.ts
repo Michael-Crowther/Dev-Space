@@ -1,23 +1,12 @@
 "use server";
-import { z, ZodError } from "zod";
+import { ZodError } from "zod";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { getHashedPassword } from "../utils/bcrypt";
 import { LibsqlError } from "@libsql/client";
+import { registerSchema } from "../utils/zodSchemas";
 
-const registerSchema = z.object({
-  firstName: z.string().trim(),
-  lastName: z.string().trim(),
-  email: z.string().trim().email().toLowerCase(),
-  displayName: z
-    .string()
-    .max(20, "Display name must be 20 characters or less")
-    .trim(),
-  username: z.string().max(20, "Username must be 20 characters or less").trim(),
-  password: z.string().min(1).trim(),
-});
-
-export async function handleRegister(formData: FormData) {
+export async function register(formData: FormData) {
   "use server";
 
   try {

@@ -2,7 +2,11 @@ import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { procedure, router, userProcedure } from "../trpc";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { LibsqlError } from "@libsql/client";
+import {
+  updateDisplayNameSchema,
+  updateUsernameSchema,
+} from "@/server/utils/zodSchemas";
 
 export const userRouter = router({
   all: procedure.query(async () => {
@@ -26,19 +30,12 @@ export const userRouter = router({
   }),
 
   updateDisplayName: userProcedure()
-    .input(
-      z.object({
-        value: z
-          .string()
-          .max(20, "Display name must be 20 characters or less")
-          .trim(),
-      })
-    )
-    .mutation(async ({ input: { value }, ctx: { user } }) => {
+    .input(updateDisplayNameSchema)
+    .mutation(async ({ input: { name }, ctx: { user } }) => {
       try {
         await db
           .update(users)
-          .set({ displayName: value })
+          .set({ displayName: name })
           .where(eq(users.id, user.id));
 
         return { message: "Display name was successfully changed." };
@@ -50,24 +47,17 @@ export const userRouter = router({
     }),
 
   updateUsername: userProcedure()
-    .input(
-      z.object({
-        value: z
-          .string()
-          .max(20, "Username must be 20 characters or less")
-          .trim(),
-      })
-    )
-    .mutation(async ({ input: { value }, ctx: { user } }) => {
+    .input(updateUsernameSchema)
+    .mutation(async ({ input: { name }, ctx: { user } }) => {
       try {
         await db
           .update(users)
-          .set({ username: value })
+          .set({ username: name })
           .where(eq(users.id, user.id));
 
         return { message: "Username was successfully changed." };
       } catch (error) {
-        if (error instanceof Error) {
+        if (error instanceof LibsqlError) {
           return { message: error.message };
         }
       }

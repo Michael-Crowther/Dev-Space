@@ -140,6 +140,10 @@ function FormDialog<TFieldValues extends FieldValues>(
                 {/* <Badge variant={isDirty ? "destructive" : "primary"}>
                   form {isDirty ? "is" : "is not"} dirty
                 </Badge> */}
+                <p className="text-primary">
+                  {" "}
+                  form {isDirty ? "is" : "is not"} dirty
+                </p>
                 <PrettyObject>
                   {{
                     values: form.watch(),
@@ -250,7 +254,7 @@ function FormInput<
             />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
-          <FormMessage />
+          <FormMessage className="text-red-500" />
         </FormItem>
       )}
     />

@@ -6,6 +6,10 @@ import { SimpleEditDialog } from "@/components/utils/SimpleEditDialog";
 import { format } from "date-fns";
 import { api } from "../api/trpc/util";
 import { ReactNode } from "react";
+import {
+  updateDisplayNameSchema,
+  updateUsernameSchema,
+} from "@/server/utils/zodSchemas";
 
 export default function MyAccount() {
   const { user, getUser } = useUser();
@@ -55,7 +59,8 @@ export default function MyAccount() {
                 fieldLabel="Display Name"
                 fieldValue={displayName || ""}
                 loading={displayPending}
-                onSubmit={(value) => updateDisplayName({ value })}
+                onSubmit={(name) => updateDisplayName({ name })}
+                schema={updateDisplayNameSchema}
               />
             </MyAccountSection>
             <MyAccountSection header="USERNAME" value={username}>
@@ -64,7 +69,8 @@ export default function MyAccount() {
                 fieldLabel="Username"
                 fieldValue={username || ""}
                 loading={usernamePending}
-                onSubmit={(value) => updateUsername({ value })}
+                onSubmit={(name) => updateUsername({ name })}
+                schema={updateUsernameSchema}
               />
             </MyAccountSection>
             <MyAccountSection header="EMAIL" value={email} />
