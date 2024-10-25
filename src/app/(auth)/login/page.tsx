@@ -1,9 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { BeatLoader } from "react-spinners";
 import { useActionState } from "react";
 import { authenticate } from "@/server/actions/authenticate";
+import { ButtonLoader } from "@/components/utils/ButtonLoader";
 
 export default function Login() {
   const [errorMessage, formAction, isPending] = useActionState(
@@ -61,7 +61,7 @@ export default function Login() {
             disabled={isPending}
             className="bg-brand rounded-sm p-3 hover:cursor-pointer flex items-center justify-center h-12"
           >
-            {isPending ? <BeatLoader color="#92DDFD" size={10} /> : "Log In"}
+            {isPending ? <ButtonLoader /> : "Log In"}
           </button>
           <div className="flex items-center space-x-1 text-sm mt-2">
             <p className="text-gray-400">Need an account?</p>

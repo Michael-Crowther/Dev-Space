@@ -11,7 +11,8 @@ export async function authenticate(
   try {
     await signIn("credentials", {
       ...Object.fromEntries(formData.entries()),
-      redirect: false,
+      // redirect: false,
+      redirectTo: "/",
     });
     redirect("/");
   } catch (error) {

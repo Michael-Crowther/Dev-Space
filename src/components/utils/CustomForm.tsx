@@ -37,6 +37,7 @@ import {
 import { Input, InputProps } from "../ui/input";
 import { cn } from "@/lib/utils";
 import { PrettyObject } from "./PrettyObject";
+import { ButtonLoader } from "./ButtonLoader";
 
 type FormDialogProps<TFieldValues extends FieldValues> = {
   debug?: boolean;
@@ -51,6 +52,7 @@ type FormDialogProps<TFieldValues extends FieldValues> = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   end?: ReactNode;
+  className?: string;
 };
 
 function FormDialog<TFieldValues extends FieldValues>(
@@ -70,6 +72,7 @@ function FormDialog<TFieldValues extends FieldValues>(
     open,
     onOpenChange,
     end,
+    className,
   } = props;
 
   const {
@@ -99,7 +102,7 @@ function FormDialog<TFieldValues extends FieldValues>(
         open={discardChangesOpen}
         onOpenChange={setDiscardChangesOpen}
       >
-        <AlertDialogContent>
+        <AlertDialogContent className="">
           <AlertDialogHeader>
             <AlertDialogTitle>Discard changes?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -119,7 +122,12 @@ function FormDialog<TFieldValues extends FieldValues>(
           {trigger ? (
             trigger
           ) : (
-            <Button className="bg-bgnav text-primary hover:opacity-75 hover:bg-nav">
+            <Button
+              className={cn(
+                "bg-bgnav text-primary hover:opacity-75 hover:bg-nav",
+                className
+              )}
+            >
               {buttonTitle || title}
             </Button>
           )}
@@ -159,8 +167,9 @@ function FormDialog<TFieldValues extends FieldValues>(
               <>
                 <Button
                   onClick={() => handleOpenChange(false)}
+                  variant="ghost"
                   disabled={loading}
-                  variant={"outline"}
+                  className="text-primary"
                 >
                   Cancel
                 </Button>
@@ -171,7 +180,7 @@ function FormDialog<TFieldValues extends FieldValues>(
                   onClick={form.handleSubmit(onSubmit)}
                   className="bg-brand text-primary hover:opacity-75 hover:bg-nav"
                 >
-                  Submit
+                  {loading ? <ButtonLoader /> : "Submit"}
                 </Button>
               </>
             )}
@@ -179,7 +188,7 @@ function FormDialog<TFieldValues extends FieldValues>(
               <>
                 <Button
                   onClick={handleCloseAndReset}
-                  disabled={!isDirty || loading}
+                  disabled={loading}
                   variant="ghost"
                   //variant={!isDirty ? "outline" : "destructive"}
                   className="text-primary"

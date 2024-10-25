@@ -1,9 +1,10 @@
 "use client";
-import { api } from "@/app/api/trpc/util";
+import { api } from "@/app/(app)/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
 import { createContext, ReactNode, useContext } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { LoadingSpinner } from "../utils/LoadingSpinner";
 
 type UserContext = {
   user: UserProfile;
@@ -22,6 +23,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   );
 
+  if (!user) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <UserContext.Provider value={{ user, getUser }}>
       {children}
@@ -37,10 +42,9 @@ export function useUser() {
   }
 
   if (!context) {
-    throw new Error(
-      "useUser must be used within a UserContextProvider || user does not exist"
-    );
+    throw new Error("useUser must be used within a UserContextProvider");
   }
+
   const { user, getUser } = context;
   return { user, getUser };
 }

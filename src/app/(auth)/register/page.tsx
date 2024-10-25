@@ -1,10 +1,10 @@
 "use client";
+import { ButtonLoader } from "@/components/utils/ButtonLoader";
 // import { PrettyObject } from "@/components/utils/PrettyObject";
 import { cn } from "@/lib/utils";
 import { register } from "@/server/actions/register";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { BeatLoader } from "react-spinners";
 
 export default function Register() {
   const router = useRouter();
@@ -126,7 +126,7 @@ export default function Register() {
             disabled={loading}
             className="bg-brand rounded-sm p-3 hover:cursor-pointer flex items-center justify-center h-12 mt-4"
           >
-            {loading ? <BeatLoader color="#92DDFD" size={10} /> : "Continue"}
+            {loading ? <ButtonLoader /> : "Continue"}
           </button>
           <a
             href="/login"

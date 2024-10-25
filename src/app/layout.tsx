@@ -3,11 +3,12 @@ import localFont from "next/font/local";
 import "../../globals.css";
 import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/components/providers/QueryProvider";
-import { UserProvider } from "@/components/providers/UserProvider";
 import { SessionProvider } from "next-auth/react";
+import { ToastProvider } from "@/components/ui/toast";
+import { AuthWrapper } from "@/components/providers/AuthWrapper";
 
 const whitneysemibold = localFont({
-  src: "./fonts/whitneysemibold.otf",
+  src: "./(app)/fonts/whitneysemibold.otf",
   variable: "--font-whitney-light",
   weight: "100 900",
 });
@@ -24,19 +25,21 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${whitneysemibold.className} antialiased flex`}>
+      <body
+        className={`${whitneysemibold.className} antialiased flex h-screen`}
+      >
         <QueryProvider>
           <SessionProvider>
-            <UserProvider>
+            <ToastProvider>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="dark"
                 enableSystem
                 disableTransitionOnChange
               >
-                {children}
+                <AuthWrapper>{children}</AuthWrapper>
               </ThemeProvider>
-            </UserProvider>
+            </ToastProvider>
           </SessionProvider>
         </QueryProvider>
       </body>

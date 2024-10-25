@@ -10,6 +10,7 @@ import {
   updateDisplayNameSchema,
   updateUsernameSchema,
 } from "@/server/utils/zodSchemas";
+import { ChangePassword } from "@/components/forms/ChangePassword";
 
 export default function MyAccount() {
   const { user, getUser } = useUser();
@@ -77,6 +78,8 @@ export default function MyAccount() {
           </Card>
         </div>
       </Card>
+
+      <ChangePassword />
     </>
   );
 }
