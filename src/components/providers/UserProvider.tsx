@@ -1,10 +1,9 @@
 "use client";
 import { api } from "@/app/(app)/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import { createContext, ReactNode, useContext } from "react";
 import { useSession } from "next-auth/react";
 import { LoadingSpinner } from "../utils/LoadingSpinner";
-import { useRouter } from "next/navigation";
 
 type UserContext = {
   user: UserProfile;
@@ -14,8 +13,7 @@ type UserContext = {
 export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session } = useSession();
 
   const {
     data: user,
@@ -25,13 +23,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     enabled: !!session?.user?.id,
   });
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
-  if (status === "loading" || isLoading) {
+  if (isLoading || !user) {
     return <LoadingSpinner />;
   }
 
