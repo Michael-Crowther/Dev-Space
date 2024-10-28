@@ -1,10 +1,10 @@
 "use client";
 import { api } from "@/app/(app)/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import { LoadingSpinner } from "../utils/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 type UserContext = {
   user: UserProfile;
@@ -14,16 +14,24 @@ type UserContext = {
 export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const { data: user, refetch: getUser } = api.base.user.getUser.useQuery(
-    undefined,
-    {
-      enabled: !!session?.user?.id,
+  const {
+    data: user,
+    refetch: getUser,
+    isLoading,
+  } = api.base.user.getUser.useQuery(undefined, {
+    enabled: !!session?.user?.id,
+  });
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
     }
-  );
+  }, [status, router]);
 
-  if (!user) {
+  if (status === "loading" || isLoading) {
     return <LoadingSpinner />;
   }
 
@@ -37,12 +45,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 export function useUser() {
   const context = useContext(UserContext);
 
-  if (!context?.user) {
-    redirect("/login");
-  }
-
-  if (!context) {
-    throw new Error("useUser must be used within a UserContextProvider");
+  if (!context || !context.user) {
+    throw new Error(
+      "useUser must be used within a UserContextProvider || user does not exist"
+    );
   }
 
   const { user, getUser } = context;

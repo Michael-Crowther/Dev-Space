@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { SimpleEditDialog } from "@/components/utils/SimpleEditDialog";
 import { format } from "date-fns";
-import { api } from "../api/trpc/util";
+import { api } from "../../(app)/api/trpc/util";
 import { ReactNode } from "react";
 import {
   updateDisplayNameSchema,
