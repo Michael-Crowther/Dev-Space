@@ -1,5 +1,6 @@
 "use client";
 import { ButtonLoader } from "@/components/utils/ButtonLoader";
+import { toast } from "@/hooks/use-toast";
 // import { PrettyObject } from "@/components/utils/PrettyObject";
 import { cn } from "@/lib/utils";
 import { register } from "@/server/actions/register";
@@ -24,7 +25,10 @@ export default function Register() {
       setLoading(false);
       if (result.zodErrors) setErrors(result.zodErrors);
       else if (result.sqlError) setErrors(result.sqlError);
-      else router.push("/login");
+      else {
+        router.push("/login");
+        toast({ description: result.message });
+      }
     }
   }
 

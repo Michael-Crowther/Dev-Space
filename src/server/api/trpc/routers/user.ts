@@ -9,7 +9,6 @@ import {
   updateUsernameSchema,
 } from "@/server/utils/zodSchemas";
 import { getHashedPassword, isPasswordMatch } from "@/server/utils/bcrypt";
-import { toast } from "@/hooks/use-toast";
 
 export const userRouter = router({
   all: procedure.query(async () => {
@@ -61,7 +60,7 @@ export const userRouter = router({
         return { message: "Username was successfully changed." };
       } catch (error) {
         if (error instanceof LibsqlError) {
-          return { message: error.message };
+          throw new Error(`Username '${name}' already exists`);
         }
       }
     }),
@@ -71,7 +70,7 @@ export const userRouter = router({
     .mutation(async ({ input, ctx: { user } }) => {
       const { currentPassword, newPassword, confirmNewPassword } = input;
       if (newPassword !== confirmNewPassword) {
-        toast({ description: "Passwords do not match" });
+        throw new Error("Passwords do not match");
       }
 
       if (newPassword === currentPassword) {
@@ -98,6 +97,6 @@ export const userRouter = router({
       }
       const passwordHash = await getHashedPassword(newPassword);
       await db.update(users).set({ passwordHash }).where(eq(users.id, user.id));
-      return { message: "Changed password" };
+      return { message: "Password successfully changed" };
     }),
 });

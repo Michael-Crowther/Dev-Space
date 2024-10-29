@@ -11,6 +11,7 @@ import {
   updateUsernameSchema,
 } from "@/server/utils/zodSchemas";
 import { ChangePassword } from "@/components/forms/ChangePassword";
+import { toast } from "@/hooks/use-toast";
 
 export default function MyAccount() {
   const { user, getUser } = useUser();
@@ -21,15 +22,20 @@ export default function MyAccount() {
 
   const { mutate: updateDisplayName, isPending: displayPending } =
     api.base.user.updateDisplayName.useMutation({
-      onSuccess: () => {
+      onSuccess: (data) => {
         getUser();
+        toast({ description: data?.message });
       },
     });
 
   const { mutate: updateUsername, isPending: usernamePending } =
     api.base.user.updateUsername.useMutation({
-      onSuccess: () => {
+      onSuccess: (data) => {
         getUser();
+        toast({ description: data?.message });
+      },
+      onError: (error) => {
+        toast({ description: error?.message, variant: "destructive" });
       },
     });
 

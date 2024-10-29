@@ -5,14 +5,16 @@ import { useState } from "react";
 import { passwordChangeSchema } from "@/server/utils/zodSchemas";
 import { Form } from "../utils/CustomForm";
 import { api } from "@/app/(app)/api/trpc/util";
+import { toast } from "@/hooks/use-toast";
 
 export function ChangePassword() {
   const [isOpen, setIsOpen] = useState(false);
 
   const setNewPassword = api.base.user.changePassword.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       setIsOpen(false);
       form.reset();
+      toast({ description: data.message });
     },
   });
 

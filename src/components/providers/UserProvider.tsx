@@ -29,10 +29,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!sessionFetched) {
-      getSession();
+      getSession().then(() => getUser());
       setSessionFetched(true);
     }
-  }, []);
+  }, [getUser, sessionFetched]);
 
   if (!user) {
     return <LoadingSpinner />;
