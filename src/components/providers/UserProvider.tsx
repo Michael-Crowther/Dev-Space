@@ -1,8 +1,14 @@
 "use client";
 import { api } from "@/app/(app)/api/trpc/util";
 import { UserProfile } from "@/server/shared/routerTypes";
-import { createContext, ReactNode, useContext } from "react";
-import { useSession } from "next-auth/react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { getSession, useSession } from "next-auth/react";
 import { LoadingSpinner } from "../utils/LoadingSpinner";
 
 type UserContext = {
@@ -13,17 +19,22 @@ type UserContext = {
 export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { data: session } = useSession();
+  const { status } = useSession();
+  const [sessionFetched, setSessionFetched] = useState(false);
 
-  const {
-    data: user,
-    refetch: getUser,
-    isLoading,
-  } = api.base.user.getUser.useQuery(undefined, {
-    enabled: !!session?.user?.id,
-  });
+  const { data: user, refetch: getUser } = api.base.user.getUser.useQuery(
+    undefined,
+    { enabled: status === "authenticated" }
+  );
 
-  if (isLoading || !user) {
+  useEffect(() => {
+    if (!sessionFetched) {
+      getSession();
+      setSessionFetched(true);
+    }
+  }, []);
+
+  if (!user) {
     return <LoadingSpinner />;
   }
 
