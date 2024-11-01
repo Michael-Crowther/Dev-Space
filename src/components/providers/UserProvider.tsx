@@ -22,10 +22,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { status } = useSession();
   const [sessionFetched, setSessionFetched] = useState(false);
 
-  const { data: user, refetch: getUser } = api.base.user.getUser.useQuery(
-    undefined,
-    { enabled: status === "authenticated" }
-  );
+  const {
+    data: user,
+    refetch: getUser,
+    isLoading,
+  } = api.base.user.getUser.useQuery(undefined, {
+    enabled: status === "authenticated",
+  });
 
   useEffect(() => {
     if (!sessionFetched) {
@@ -34,7 +37,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }, [getUser, sessionFetched]);
 
-  if (!user) {
+  if (!user || isLoading || status === "loading") {
     return <LoadingSpinner />;
   }
 

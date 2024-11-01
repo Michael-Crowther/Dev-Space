@@ -36,8 +36,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input, InputProps } from "../ui/input";
 import { cn } from "@/lib/utils";
-import { PrettyObject } from "./PrettyObject";
-import { ButtonLoader } from "./ButtonLoader";
+import { PrettyObject } from "../utils/PrettyObject";
+import { ButtonLoader } from "../utils/ButtonLoader";
 
 type FormDialogProps<TFieldValues extends FieldValues> = {
   debug?: boolean;

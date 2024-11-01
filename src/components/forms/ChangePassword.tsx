@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { passwordChangeSchema } from "@/server/utils/zodSchemas";
-import { Form } from "../utils/CustomForm";
+import { Form } from "./CustomForm";
 import { api } from "@/app/(app)/api/trpc/util";
 import { toast } from "@/hooks/use-toast";
 

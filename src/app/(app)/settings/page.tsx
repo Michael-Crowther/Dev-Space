@@ -1,8 +1,7 @@
 "use client";
 import { useUser } from "@/components/providers/UserProvider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { SimpleEditDialog } from "@/components/utils/SimpleEditDialog";
+import { SimpleEditDialog } from "@/components/forms/SimpleEditDialog";
 import { format } from "date-fns";
 import { api } from "../../(app)/api/trpc/util";
 import { ReactNode } from "react";
@@ -12,12 +11,11 @@ import {
 } from "@/server/utils/zodSchemas";
 import { ChangePassword } from "@/components/forms/ChangePassword";
 import { toast } from "@/hooks/use-toast";
+import { Avatar } from "@/components/utils/Avatar";
 
 export default function MyAccount() {
   const { user, getUser } = useUser();
-
   const { displayName, username, createdAt, email } = user;
-
   const formattedDate = format(new Date(createdAt), "MMM dd, yyyy");
 
   const { mutate: updateDisplayName, isPending: displayPending } =
@@ -45,10 +43,7 @@ export default function MyAccount() {
       <Card className="my-2 bg-bgnav h-[340px] p-6 flex">
         <div className="flex items-start flex-col space-y-3 w-full">
           <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>MC</AvatarFallback>
-            </Avatar>
+            <Avatar allowEdit />
             <section className="flex flex-col text-sm">
               <p className="font-bold text-xl">{displayName || username}</p>
               <p className="text-muted-foreground">

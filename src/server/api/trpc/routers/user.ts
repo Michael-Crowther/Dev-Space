@@ -26,6 +26,7 @@ export const userRouter = router({
         dateOfBirth: true,
         createdAt: true,
         updatedAt: true,
+        profileImageUrl: true,
       },
       where: eq(users.id, user.id),
     });

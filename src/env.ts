@@ -21,6 +21,7 @@ const EnvSchema = z.object({
   TURSO_AUTH_TOKEN: z.string(),
   DB_MIGRATING: stringBoolean,
   DB_SEEDING: stringBoolean,
+  BLOB_READ_WRITE_TOKEN: z.string(),
 });
 
 export type EnvSchema = z.infer<typeof EnvSchema>;

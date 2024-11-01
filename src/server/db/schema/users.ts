@@ -8,6 +8,9 @@ const users = sqliteTable("users", {
   name: text("name").notNull(),
   username: text("username").notNull().unique(),
   displayName: text("display_name"),
+  profileImageUrl: text("profile_image_url")
+    .default("https://github.com/shadcn.png")
+    .notNull(),
   email: text("email").notNull().unique(),
   dateOfBirth: integer("date_of_birth", { mode: "timestamp" }).notNull(),
   passwordHash: text("password_hash").notNull(),
