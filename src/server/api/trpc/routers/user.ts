@@ -100,4 +100,8 @@ export const userRouter = router({
       await db.update(users).set({ passwordHash }).where(eq(users.id, user.id));
       return { message: "Password successfully changed" };
     }),
+
+  sendFriendRequest: userProcedure().mutation(async () => {
+    console.log("how do I send friend request");
+  }),
 });

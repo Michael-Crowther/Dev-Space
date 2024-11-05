@@ -3,7 +3,7 @@ import { useUser } from "@/components/providers/UserProvider";
 import { Card } from "@/components/ui/card";
 import { SimpleEditDialog } from "@/components/forms/SimpleEditDialog";
 import { format } from "date-fns";
-import { api } from "../../(app)/api/trpc/util";
+import { api } from "../api/trpc/util";
 import { ReactNode } from "react";
 import {
   updateDisplayNameSchema,

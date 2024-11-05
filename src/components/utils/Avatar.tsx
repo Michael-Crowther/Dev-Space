@@ -57,12 +57,13 @@ export function Avatar({ allowEdit = false, className }: AvatarProps) {
             <>
               <input
                 type="file"
+                title=""
                 accept="image/*"
                 multiple={false}
                 onChange={handleImageUpload}
-                className="absolute z-10 opacity-0 cursor-pointer h-full w-full"
+                className="absolute z-10 opacity-100 h-96 w-full cursor-pointer"
               />
-              <Pencil className="absolute size-6 opacity-0 group-hover:opacity-100 transition-opacity text-gray-700" />
+              <Pencil className="absolute size-6 opacity-0 group-hover:opacity-100 transition-opacity" />
             </>
           )}
         </>

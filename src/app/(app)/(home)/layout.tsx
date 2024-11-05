@@ -1,13 +1,14 @@
 import PrimaryNav from "@/components/nav/PrimaryNav";
 import SecondaryNav from "@/components/nav/SecondaryNav";
+import { ReactNode } from "react";
 
-export default async function Home() {
+export default function HomeLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <PrimaryNav />
       <SecondaryNav />
-      <div className="w-screen bg-page flex items-center justify-center text-primary">
-        Direct messages page
+      <div className="flex flex-col w-full bg-page text-primary">
+        {children}
       </div>
     </>
   );

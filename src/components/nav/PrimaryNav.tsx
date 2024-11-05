@@ -31,7 +31,7 @@ function PrimaryNavButton({ icon, tooltip }: PrimaryNavButtonProps) {
     <Tooltip placement="right" title={tooltip} className="ml-3">
       <Button
         size="icon"
-        className="rounded-full w-14 h-14 mb-2 hover:rounded-xl bg-brand-500 hover:bg-brand-600"
+        className="rounded-3xl w-14 h-14 mb-2 hover:rounded-[17px] bg-brand-500 hover:bg-brand-600 transition-all duration-400 ease-in-out"
       >
         {icon}
       </Button>
