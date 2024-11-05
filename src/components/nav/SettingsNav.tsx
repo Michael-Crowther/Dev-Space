@@ -1,11 +1,11 @@
 "use client";
-import { LogOutIcon, Search } from "lucide-react";
-import { Input } from "../ui/input";
+import { LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { SearchBar } from "../utils/SearchBar";
 
 export function SettingsNav() {
   const pathname = usePathname();
@@ -70,13 +70,8 @@ export function SettingsNav() {
   return (
     <div className="min-w-[240px] w-1/3 bg-bgsecondary p-3 flex justify-end overflow-auto">
       <div className="h-full w-52 p-2">
-        <Input
-          placeholder="Search"
-          className="bg-bgnav mb-3 text-secondary-foreground h-8"
-          endAdornment={<Search className="text-muted-foreground" size={20} />}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <SearchBar search={search} setSearch={setSearch} />
+
         {settingsSections.map(({ header, buttons }) => {
           const filteredButtons = buttons.filter(({ label }) =>
             label.toLowerCase().includes(search.toLowerCase())

@@ -5,10 +5,14 @@ import { ProfileNav } from "./ProfileNav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PageHeader } from "../utils/PageHeader";
+import { api } from "@/app/(app)/api/trpc/util";
+import { Badge } from "../ui/badge";
 
 export default function SecondaryNav() {
   const pathname = usePathname();
   const selected = pathname.startsWith("/friends");
+
+  const pendingRequests = api.base.user.friendRequests.useQuery();
 
   return (
     <div className="flex flex-col">
@@ -26,6 +30,10 @@ export default function SecondaryNav() {
           >
             <Contact />
             Friends
+            <span className="flex-1" />
+            {pendingRequests?.data && pendingRequests.data.count > 0 && (
+              <Badge variant="destructive">{pendingRequests.data.count}</Badge>
+            )}
           </Button>
         </Link>
       </section>

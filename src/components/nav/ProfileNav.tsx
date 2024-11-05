@@ -85,7 +85,7 @@ function ProfilePopover() {
           className="flex space-x-2 justify-start p-1 hover:bg-page h-12 w-full max-w-48 truncate"
           variant="ghost"
         >
-          <Avatar className="h-12 w-12" />
+          <Avatar className="size-12" />
           <div className="flex flex-col items-start">
             <p className="font-bold flex">{displayName || username}</p>
             <p className="text-sm text-muted-foreground">{username}</p>
@@ -94,7 +94,7 @@ function ProfilePopover() {
       </PopoverTrigger>
       <PopoverContent className="w-96 ml-12 bg-card p-6 flex gap-4 flex-col">
         <section className="flex items-center gap-3">
-          <Avatar className="h-24 w-24" />
+          <Avatar className="size-24" />
           <div className="flex flex-col text-sm space-y-1">
             <p className="font-bold text-2xl">{displayName || username}</p>
             <p className="text-sm">{username}</p>

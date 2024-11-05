@@ -8,11 +8,16 @@ import { FadeLoader } from "react-spinners";
 type AvatarProps = {
   allowEdit?: boolean;
   className?: string;
+  profileImageUrl?: string;
 };
 
-export function Avatar({ allowEdit = false, className }: AvatarProps) {
+export function Avatar({
+  allowEdit = false,
+  className,
+  profileImageUrl,
+}: AvatarProps) {
   const { user, getUser } = useUser();
-  const { profileImageUrl } = user;
+  const { profileImageUrl: loggedInUserUrl } = user;
   const [loading, setLoading] = useState(false);
 
   async function handleImageUpload(e: ChangeEvent<HTMLInputElement>) {
@@ -29,8 +34,8 @@ export function Avatar({ allowEdit = false, className }: AvatarProps) {
   }
 
   useEffect(() => {
-    if (profileImageUrl) setLoading(false);
-  }, [profileImageUrl]);
+    if (loggedInUserUrl) setLoading(false);
+  }, [loggedInUserUrl]);
 
   return (
     <ShadAvatar
@@ -43,15 +48,13 @@ export function Avatar({ allowEdit = false, className }: AvatarProps) {
         <FadeLoader color="#FFFF" className="ml-2" />
       ) : (
         <>
-          {profileImageUrl && (
-            <AvatarImage
-              src={profileImageUrl}
-              className={cn(
-                "transition-opacity duration-300",
-                allowEdit ? "group-hover:opacity-60" : ""
-              )}
-            />
-          )}
+          <AvatarImage
+            src={profileImageUrl || loggedInUserUrl}
+            className={cn(
+              "transition-opacity duration-300",
+              allowEdit ? "group-hover:opacity-60" : ""
+            )}
+          />
 
           {allowEdit && (
             <>

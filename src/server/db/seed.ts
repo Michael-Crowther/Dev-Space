@@ -43,6 +43,27 @@ async function seed() {
       passwordHash,
       dateOfBirth: randomDate(),
     },
+    {
+      name: "James Bond",
+      username: "james-bond",
+      email: "james.bond@yahoo.com",
+      passwordHash,
+      dateOfBirth: randomDate(),
+    },
+    {
+      name: "Michael Jackson",
+      username: "michael-jackson",
+      email: "michael.jackson@yahoo.com",
+      passwordHash,
+      dateOfBirth: randomDate(),
+    },
+    {
+      name: "Donald Trump",
+      username: "donald-trump",
+      email: "donald.trump@yahoo.com",
+      passwordHash,
+      dateOfBirth: randomDate(),
+    },
   ]);
 }
 
