@@ -14,7 +14,7 @@ export default function PrimaryNav() {
           icon={<DiscordIcon className="h-8 w-8" />}
           tooltip="Direct Messages"
         />
-        <span className="border border-bgsecondary w-12" />
+        <span className="border w-12" />
       </section>
       <ThemeSwitcher />
     </div>

@@ -1,7 +1,8 @@
 import env from "@/env";
 import { db } from "@/server/db";
-import { users } from "./schema";
+import { friendRequests, users } from "./schema";
 import { getHashedPassword } from "../utils/bcrypt";
+import { fakeUsers } from "./seedData";
 
 if (!env.DB_SEEDING) {
   throw new Error('You must set DB_SEEDING to "true" when running seeds');
@@ -28,43 +29,19 @@ async function seed() {
 
   const passwordHash = await getHashedPassword("1234");
 
-  return await db.insert(users).values([
-    {
-      name: "Michael Crowther",
-      username: "michael-crowther",
-      email: "md.crowther@yahoo.com",
-      passwordHash,
-      dateOfBirth: randomDate(),
-    },
-    {
-      name: "Billy Bob",
-      username: "billy-bob",
-      email: "billy.bob@yahoo.com",
-      passwordHash,
-      dateOfBirth: randomDate(),
-    },
-    {
-      name: "James Bond",
-      username: "james-bond",
-      email: "james.bond@yahoo.com",
-      passwordHash,
-      dateOfBirth: randomDate(),
-    },
-    {
-      name: "Michael Jackson",
-      username: "michael-jackson",
-      email: "michael.jackson@yahoo.com",
-      passwordHash,
-      dateOfBirth: randomDate(),
-    },
-    {
-      name: "Donald Trump",
-      username: "donald-trump",
-      email: "donald.trump@yahoo.com",
-      passwordHash,
-      dateOfBirth: randomDate(),
-    },
-  ]);
+  //create fake users
+  for (const user of fakeUsers) {
+    await db
+      .insert(users)
+      .values({ ...user, passwordHash, dateOfBirth: randomDate() });
+  }
+
+  //create friend requests with myself
+  for (let i = 1; i < fakeUsers.length - 1; i++) {
+    await db
+      .insert(friendRequests)
+      .values({ senderId: fakeUsers[i].id, receiverId: fakeUsers[0].id });
+  }
 }
 
 seed()

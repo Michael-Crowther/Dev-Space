@@ -27,14 +27,14 @@ export default function FriendsLayout({ children }: { children: ReactNode }) {
   const pendingRequests = api.base.user.friendRequests.useQuery();
 
   return (
-    <>
+    <div className="h-full flex flex-col">
       <PageHeader className="flex items-center gap-3">
         <section className="flex gap-2 text-muted-foreground">
           <Contact />
           <p className="text-primary">Friends</p>
         </section>
 
-        <span className="border-l border-muted-foreground/30 h-6 ml-2" />
+        <span className="border-l h-6 ml-2" />
 
         <section className="text-muted-foreground space-x-3">
           <HeaderLink label="All" href="/friends" />
@@ -56,11 +56,11 @@ export default function FriendsLayout({ children }: { children: ReactNode }) {
           />
         </section>
       </PageHeader>
-      <section className="flex flex-1">
+      <section className="flex flex-1 overflow-hidden">
         <div className="w-3/4 border-r">{children}</div>
         <div className="w-1/4 p-3">Active now</div>
       </section>
-    </>
+    </div>
   );
 }
 

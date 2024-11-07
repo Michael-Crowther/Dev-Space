@@ -70,7 +70,7 @@ export function SettingsNav() {
   return (
     <div className="min-w-[240px] w-1/3 bg-bgsecondary p-3 flex justify-end overflow-auto">
       <div className="h-full w-52 p-2">
-        <SearchBar search={search} setSearch={setSearch} />
+        <SearchBar setSearch={setSearch} />
 
         {settingsSections.map(({ header, buttons }) => {
           const filteredButtons = buttons.filter(({ label }) =>
@@ -102,7 +102,7 @@ type SettingsSectionProps = {
 
 function SettingsSection({ header, buttons, pathname }: SettingsSectionProps) {
   return (
-    <div className=" border-b py-2 border-page">
+    <div className=" border-b py-2">
       {header && (
         <p className="text-muted-foreground text-xs pl-3 pb-2 mt-1">{header}</p>
       )}

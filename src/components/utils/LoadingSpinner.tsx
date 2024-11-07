@@ -17,7 +17,7 @@ export function LoadingSpinner() {
   }
 
   return (
-    <div className="flex items-center justify-center w-full">
+    <div className="flex items-center justify-center w-full h-full">
       <DotLoader
         className="size-96 flex items-center justify-center"
         color="#048AC4"

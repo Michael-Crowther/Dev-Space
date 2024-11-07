@@ -17,7 +17,7 @@ export default function SecondaryNav() {
   return (
     <div className="flex flex-col">
       <PageHeader className="bg-bgsecondary p-2">
-        <Button className="border-b h-8 bg-card text-muted-foreground w-full justify-start flex hover:bg-card">
+        <Button className="h-8 bg-card text-muted-foreground w-full justify-start flex hover:bg-card">
           Find or start a conversation
         </Button>
       </PageHeader>

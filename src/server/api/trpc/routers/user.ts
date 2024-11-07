@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
 import { friendRequests, friendships, users } from "@/server/db/schema";
 import { procedure, router, userProcedure } from "../trpc";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, like, or, sql } from "drizzle-orm";
 import { LibsqlError } from "@libsql/client";
 import {
   passwordChangeSchema,
@@ -169,35 +169,45 @@ export const userRouter = router({
       }
     ),
 
-  friendRequests: userProcedure().query(async ({ ctx: { user } }) => {
-    const requests = await db.query.friendRequests.findMany({
-      where: and(
-        eq(friendRequests.receiverId, user.id),
-        eq(friendRequests.status, "pending")
-      ),
-    });
+  friendRequests: userProcedure()
+    .input(z.object({ search: z.string() }).optional())
+    .query(async ({ input, ctx: { user } }) => {
+      const requests = await db
+        .select({
+          requestId: friendRequests.id,
+          senderId: friendRequests.senderId,
+          username: users.username,
+        })
+        .from(friendRequests)
+        .leftJoin(users, eq(users.id, friendRequests.senderId))
+        .where(
+          and(
+            eq(friendRequests.receiverId, user.id),
+            eq(friendRequests.status, "pending"),
+            !!input?.search
+              ? like(users.username, `%${input?.search}%`)
+              : undefined
+          )
+        );
 
-    const userRequests = await Promise.all(
-      requests.map(async (request) => {
-        const sender = await db.query.users.findFirst({
-          where: eq(users.id, request.senderId),
-          columns: {
-            id: true,
-            displayName: true,
-            username: true,
-            profileImageUrl: true,
-          },
-        });
+      const requestsWithUser = await Promise.all(
+        requests.map(async ({ senderId, requestId }) => {
+          const sender = await db.query.users.findFirst({
+            where: eq(users.id, senderId),
+            columns: {
+              id: true,
+              displayName: true,
+              username: true,
+              profileImageUrl: true,
+            },
+          });
 
-        return {
-          ...request,
-          sender,
-        };
-      })
-    );
+          return { requestId, sender };
+        })
+      );
 
-    return { userRequests, count: requests.length };
-  }),
+      return { requestsWithUser, count: requests.length };
+    }),
 
   acceptOrRejectFriendRequest: userProcedure()
     .input(
@@ -250,30 +260,57 @@ export const userRouter = router({
       }
     }),
 
-  allFriends: userProcedure().query(async ({ ctx: { user } }) => {
-    const friends = await db.query.friendships.findMany({
-      where: eq(friendships.userId1, user.id),
-    });
+  allFriends: userProcedure()
+    .input(z.object({ search: z.string() }).optional())
+    .query(async ({ input, ctx: { user } }) => {
+      const friends = await db
+        .select({
+          friendId: sql<string>`
+            CASE 
+              WHEN ${friendships.userId1} = ${user.id} THEN ${friendships.userId2}
+              ELSE ${friendships.userId1}
+            END
+          `,
+          username: users.username,
+        })
+        .from(friendships)
+        .leftJoin(
+          users,
+          sql<string>`
+          users.id = CASE 
+            WHEN ${friendships.userId1} = ${user.id} THEN ${friendships.userId2}
+            ELSE ${friendships.userId1}
+          END
+        `
+        )
+        .where(
+          and(
+            !!input?.search
+              ? like(users.username, `%${input?.search}%`)
+              : undefined,
+            or(
+              eq(friendships.userId1, user.id),
+              eq(friendships.userId2, user.id)
+            )
+          )
+        );
 
-    const userFriends = await Promise.all(
-      friends.map(async (friend) => {
-        const dbFriend = await db.query.users.findFirst({
-          where: eq(users.id, friend.userId2),
-          columns: {
-            id: true,
-            displayName: true,
-            username: true,
-            profileImageUrl: true,
-          },
-        });
+      const friendsWithUser = await Promise.all(
+        friends.map(async ({ friendId }) => {
+          const friend = await db.query.users.findFirst({
+            where: eq(users.id, friendId),
+            columns: {
+              id: true,
+              displayName: true,
+              username: true,
+              profileImageUrl: true,
+            },
+          });
 
-        return {
-          ...friend,
-          dbFriend,
-        };
-      })
-    );
+          return friend;
+        })
+      );
 
-    return { userFriends, count: friends.length };
-  }),
+      return { friendsWithUser, count: friends.length };
+    }),
 });

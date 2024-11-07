@@ -13,7 +13,7 @@ export function NoResults({
     if (delayRender) {
       const timer = setTimeout(() => {
         setShowMessage(true);
-      }, 300);
+      }, 200);
 
       return () => clearTimeout(timer);
     } else {
