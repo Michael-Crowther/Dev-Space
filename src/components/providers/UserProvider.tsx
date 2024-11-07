@@ -1,6 +1,6 @@
 "use client";
 import { api } from "@/app/(app)/api/trpc/util";
-import { UserProfile } from "@/server/shared/routerTypes";
+import { FriendRequests, UserProfile } from "@/server/shared/routerTypes";
 import {
   createContext,
   ReactNode,
@@ -14,6 +14,8 @@ import { LoadingSpinner } from "../utils/LoadingSpinner";
 type UserContext = {
   user: UserProfile;
   getUser: () => void;
+  friendRequests: FriendRequests | undefined;
+  getFriendRequests: () => void;
 };
 
 export const UserContext = createContext<UserContext | undefined>(undefined);
@@ -30,6 +32,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     enabled: status === "authenticated",
   });
 
+  const { data: friendRequests, refetch: getFriendRequests } =
+    api.base.user.friendRequests.useQuery();
+
   useEffect(() => {
     if (!sessionFetched) {
       getSession().then(() => getUser());
@@ -42,7 +47,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <UserContext.Provider value={{ user, getUser }}>
+    <UserContext.Provider
+      value={{ user, getUser, friendRequests, getFriendRequests }}
+    >
       {children}
     </UserContext.Provider>
   );
@@ -57,6 +64,6 @@ export function useUser() {
     );
   }
 
-  const { user, getUser } = context;
-  return { user, getUser };
+  const { user, getUser, friendRequests, getFriendRequests } = context;
+  return { user, getUser, friendRequests, getFriendRequests };
 }

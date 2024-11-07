@@ -10,8 +10,11 @@ import { ReactNode } from "react";
 import { api } from "../../api/trpc/util";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useUser } from "@/components/providers/UserProvider";
 
 export default function FriendsLayout({ children }: { children: ReactNode }) {
+  const { friendRequests } = useUser();
+
   const sendFriendRequest = api.base.user.sendFriendRequest.useMutation({
     onSuccess: (data) =>
       toast({
@@ -23,8 +26,6 @@ export default function FriendsLayout({ children }: { children: ReactNode }) {
         variant: "destructive",
       }),
   });
-
-  const pendingRequests = api.base.user.friendRequests.useQuery();
 
   return (
     <div className="h-full flex flex-col">
@@ -41,7 +42,7 @@ export default function FriendsLayout({ children }: { children: ReactNode }) {
           <HeaderLink
             label="Pending"
             href="/friends/pending"
-            value={pendingRequests?.data?.count}
+            value={friendRequests?.count}
           />
           <HeaderLink label="Blocked" href="/friends/blocked" />
 

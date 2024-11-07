@@ -11,11 +11,11 @@ export default function Friends() {
 
   const { data: friends, isLoading } = api.base.user.allFriends.useQuery(
     { search },
-    { refetchOnMount: true }
+    { refetchOnMount: true, staleTime: 0 }
   );
 
-  if (friends?.count === 0 && !search) {
-    return <NoResults title="No friends" />;
+  if ((friends?.count === 0 || !friends) && !search) {
+    return <NoResults title="No friends" delayRender />;
   }
 
   return (

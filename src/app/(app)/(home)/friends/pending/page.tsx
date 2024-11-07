@@ -1,5 +1,6 @@
 "use client";
 import { api } from "@/app/(app)/api/trpc/util";
+import { useUser } from "@/components/providers/UserProvider";
 import { Button } from "@/components/ui/button";
 import Tooltip from "@/components/ui/tooltip";
 import { Avatar } from "@/components/utils/Avatar";
@@ -13,8 +14,10 @@ import { useDebounceValue } from "usehooks-ts";
 export default function FriendsPending() {
   const [search, setSearch] = useDebounceValue("", 300);
 
+  const { getFriendRequests } = useUser();
+
   const {
-    data: pendingRequests,
+    data: friendRequests,
     refetch,
     isLoading,
   } = api.base.user.friendRequests.useQuery(
@@ -22,8 +25,8 @@ export default function FriendsPending() {
     { refetchOnMount: true }
   );
 
-  if (pendingRequests?.count === 0 && !search) {
-    return <NoResults title="No pending requests" />;
+  if ((friendRequests?.count === 0 || !friendRequests) && !search) {
+    return <NoResults title="No pending requests" delayRender />;
   }
 
   return (
@@ -32,23 +35,26 @@ export default function FriendsPending() {
         <SearchBar setSearch={setSearch} className="px-5" />
 
         <p className="p-3 border-b w-full text-sm">
-          Pending - {pendingRequests && <span>{pendingRequests.count}</span>}
+          Pending - {friendRequests && <span>{friendRequests.count}</span>}
         </p>
       </section>
 
       {isLoading ? (
         <LoadingSpinner />
-      ) : pendingRequests?.requestsWithUser &&
-        pendingRequests.requestsWithUser.length > 0 ? (
+      ) : friendRequests?.requestsWithUser &&
+        friendRequests.requestsWithUser.length > 0 ? (
         <div className="flex flex-col w-full divide-y divide-border">
-          {pendingRequests.requestsWithUser.map(
+          {friendRequests.requestsWithUser.map(
             ({ requestId, sender }) =>
               sender && (
                 <FriendRequestRow
                   key={requestId}
                   requestId={requestId}
                   sender={sender}
-                  afterChanges={refetch}
+                  afterChanges={() => {
+                    refetch();
+                    getFriendRequests();
+                  }}
                 />
               )
           )}

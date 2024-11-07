@@ -7,3 +7,5 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
 //export type ItemType<T> = T extends Array<infer U> ? U : never;
 
 export type UserProfile = RouterOutputs["base"]["user"]["getUser"];
+
+export type FriendRequests = RouterOutputs["base"]["user"]["friendRequests"];
