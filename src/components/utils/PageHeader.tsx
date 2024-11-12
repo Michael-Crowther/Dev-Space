@@ -11,7 +11,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "max-h-12 bg-page p-3 border-b-[1px] border-card/30 text-primary shadow-md",
+        "max-h-12 bg-page p-3 border-b-[1px] border-card/30 text-primary shadow-md z-40",
         className
       )}
     >

@@ -30,8 +30,8 @@ export default function FriendsPending() {
   }
 
   return (
-    <div className="flex flex-col items-start p-4 h-full overflow-auto pt-0">
-      <section className="sticky top-0 z-50 w-full pt-4 bg-page">
+    <div className="flex flex-col items-start h-full overflow-auto pt-0">
+      <section className="sticky top-0 z-30 w-full pt-4 bg-page">
         <SearchBar setSearch={setSearch} className="px-5" />
 
         <p className="p-3 border-b w-full text-sm">
@@ -43,7 +43,7 @@ export default function FriendsPending() {
         <LoadingSpinner />
       ) : friendRequests?.requestsWithUser &&
         friendRequests.requestsWithUser.length > 0 ? (
-        <div className="flex flex-col w-full divide-y divide-border">
+        <div className="flex flex-col w-full divide-y divide-border p-3 pt-0">
           {friendRequests.requestsWithUser.map(
             ({ requestId, sender }) =>
               sender && (
@@ -90,9 +90,8 @@ function FriendRequestRow({
         toast({ description: data?.message });
         afterChanges();
       },
-      onError: (error) => {
-        toast({ description: error?.message, variant: "destructive" });
-      },
+      onError: (error) =>
+        toast({ description: error?.message, variant: "destructive" }),
     });
 
   return (
@@ -103,11 +102,12 @@ function FriendRequestRow({
         <p className="text-xs">Incoming Friend Request</p>
       </section>
       <span className="flex-1" />
-      <section className="flex gap-5">
+      <section className="flex gap-3">
         <Tooltip placement="top" title="Accept">
           <Button
             size="icon"
-            variant="ghost"
+            variant="secondary"
+            className="rounded-full p-2 size-10"
             onClick={() =>
               acceptOrRejectFriendRequest({ requestId, type: "accept" })
             }
@@ -118,7 +118,8 @@ function FriendRequestRow({
         <Tooltip placement="top" title="Ignore">
           <Button
             size="icon"
-            variant="ghost"
+            variant="secondary"
+            className="rounded-full p-2 size-10"
             onClick={() =>
               acceptOrRejectFriendRequest({ requestId, type: "reject" })
             }

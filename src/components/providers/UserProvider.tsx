@@ -10,6 +10,7 @@ import {
 } from "react";
 import { getSession, useSession } from "next-auth/react";
 import { LoadingSpinner } from "../utils/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 type UserContext = {
   user: UserProfile;
@@ -22,12 +23,14 @@ export const UserContext = createContext<UserContext | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { status } = useSession();
+  const router = useRouter();
   const [sessionFetched, setSessionFetched] = useState(false);
 
   const {
     data: user,
     refetch: getUser,
     isLoading,
+    error: userError,
   } = api.base.user.getUser.useQuery(undefined, {
     enabled: status === "authenticated",
   });
@@ -37,10 +40,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!sessionFetched) {
-      getSession().then(() => getUser());
+      getSession().then(() => {
+        getUser();
+        getFriendRequests();
+      });
       setSessionFetched(true);
     }
   }, [getUser, sessionFetched]);
+
+  useEffect(() => {
+    if (userError) {
+      router.push("/login");
+    }
+  }, [userError]);
 
   if (!user || isLoading || status === "loading") {
     return <LoadingSpinner />;

@@ -74,4 +74,9 @@ export const fakeUsers = [
     username: "superman",
     email: "superman@yahoo.com",
   },
+  {
+    name: "Longest User",
+    username: "longest-username-yuh",
+    email: "longest.user@yahoo.com",
+  },
 ];

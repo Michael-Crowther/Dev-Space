@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
 import { friendRequests, friendships, users } from "@/server/db/schema";
 import { procedure, router, userProcedure } from "../trpc";
-import { and, eq, like, or, sql } from "drizzle-orm";
+import { and, eq, inArray, like, or, sql } from "drizzle-orm";
 import { LibsqlError } from "@libsql/client";
 import {
   passwordChangeSchema,
@@ -10,6 +10,8 @@ import {
 } from "@/server/utils/zodSchemas";
 import { getHashedPassword, isPasswordMatch } from "@/server/utils/bcrypt";
 import { z } from "zod";
+import conversations from "@/server/db/schema/conversations";
+import conversationParticipants from "@/server/db/schema/conversationParticipants";
 
 export const userRouter = router({
   all: procedure.query(async () => {
@@ -313,4 +315,81 @@ export const userRouter = router({
 
       return { friendsWithUser, count: friends.length };
     }),
+
+  removeFriend: userProcedure()
+    .input(z.object({ friendId: z.string().cuid2() }))
+    .mutation(async ({ input: { friendId }, ctx: { user } }) => {
+      const friend = await db.query.users.findFirst({
+        where: eq(users.id, friendId),
+        columns: { id: true, username: true },
+      });
+
+      if (!friend) {
+        throw new Error("User does not exists");
+      }
+
+      await db
+        .delete(friendships)
+        .where(
+          or(
+            and(
+              eq(friendships.userId1, user.id),
+              eq(friendships.userId2, friendId)
+            ),
+            and(
+              eq(friendships.userId2, user.id),
+              eq(friendships.userId1, friendId)
+            )
+          )
+        );
+
+      return { message: `'${friend.username}' has been removed as a friend` };
+    }),
+
+  createDm: userProcedure()
+    .input(z.object({ userIds: z.array(z.string().cuid2()) }))
+    .mutation(async ({ input: { userIds }, ctx: { user } }) => {
+      const participants = await db.query.users.findMany({
+        where: inArray(users.id, userIds),
+        columns: {
+          id: true,
+          username: true,
+          displayName: true,
+        },
+      });
+
+      const allParticipants = [...participants, user];
+
+      const title = participants
+        .map((participant) => participant.displayName || participant.username)
+        .join(", ");
+
+      await db.transaction(async (tx) => {
+        const [conversation] = await tx
+          .insert(conversations)
+          .values({ title })
+          .returning({ id: conversations.id });
+
+        for (const participant of allParticipants) {
+          await tx.insert(conversationParticipants).values({
+            conversationId: conversation.id,
+            userId: participant.id,
+          });
+        }
+      });
+
+      return { message: "Group chat was successfully created" };
+    }),
+
+  directMessages: userProcedure().query(async ({ ctx: { user } }) => {
+    return await db.query.conversations.findMany({
+      where: inArray(
+        conversations.id,
+        db
+          .select({ id: conversationParticipants.conversationId })
+          .from(conversationParticipants)
+          .where(eq(conversationParticipants.userId, user.id))
+      ),
+    });
+  }),
 });
