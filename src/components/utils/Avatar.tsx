@@ -74,3 +74,34 @@ export function Avatar({
     </ShadAvatar>
   );
 }
+
+type MultiAvatarProps = {
+  profileImageUrl1: string | undefined;
+  profileImageUrl2: string | undefined;
+};
+
+export function MultiAvatar({
+  profileImageUrl1,
+  profileImageUrl2,
+}: MultiAvatarProps) {
+  return (
+    <div className="flex items-center min-w-11 ml-2">
+      {profileImageUrl1 && (
+        <ShadAvatar className="z-10 size-8 mb-3">
+          <AvatarImage
+            src={profileImageUrl1}
+            className={cn("transition-opacity duration-300")}
+          />
+        </ShadAvatar>
+      )}
+      {profileImageUrl2 && (
+        <ShadAvatar className="-ml-6 mt-4 z-20 size-9 border-[3px] overlap border-bgsecondary">
+          <AvatarImage
+            src={profileImageUrl2}
+            className={cn("transition-opacity duration-300")}
+          />
+        </ShadAvatar>
+      )}
+    </div>
+  );
+}

@@ -360,14 +360,12 @@ export const userRouter = router({
 
       const allParticipants = [...participants, user];
 
-      const title = participants
-        .map((participant) => participant.displayName || participant.username)
-        .join(", ");
+      //check for exising DM. It's existing if allParticipants equals conversation's conversationParticiapnts join table
 
       await db.transaction(async (tx) => {
         const [conversation] = await tx
           .insert(conversations)
-          .values({ title })
+          .values({})
           .returning({ id: conversations.id });
 
         for (const participant of allParticipants) {
@@ -383,6 +381,22 @@ export const userRouter = router({
 
   directMessages: userProcedure().query(async ({ ctx: { user } }) => {
     return await db.query.conversations.findMany({
+      columns: { id: true, title: true },
+      with: {
+        participants: {
+          columns: { joinedAt: true },
+          with: {
+            user: {
+              columns: {
+                id: true,
+                username: true,
+                displayName: true,
+                profileImageUrl: true,
+              },
+            },
+          },
+        },
+      },
       where: inArray(
         conversations.id,
         db
