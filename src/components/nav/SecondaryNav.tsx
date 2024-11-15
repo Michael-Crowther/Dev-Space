@@ -9,7 +9,7 @@ import { Badge } from "../ui/badge";
 import { useUser } from "../providers/UserProvider";
 import { api } from "@/app/(app)/api/trpc/util";
 import { DirectMessagePopover } from "../popovers/DirectMessagePopover";
-import { DirectMessages } from "@/server/shared/routerTypes";
+import { Conversations } from "@/server/shared/routerTypes";
 import { Avatar, MultiAvatar } from "../utils/Avatar";
 import { cn } from "@/lib/utils";
 
@@ -18,8 +18,8 @@ export default function SecondaryNav() {
   const selected = pathname.startsWith("/friends");
   const { friendRequests } = useUser();
 
-  const { data: directMessages, refetch: getDirectMessages } =
-    api.base.user.directMessages.useQuery();
+  const { data: conversations, refetch: getConversations } =
+    api.base.user.conversations.useQuery();
 
   return (
     <div className="flex flex-col max-w-[310px]">
@@ -51,14 +51,14 @@ export default function SecondaryNav() {
         <div className="h-full bg-bgsecondary pt-2 text-xs text-muted-foreground flex flex-col">
           <section className="flex justify-between items-center px-5">
             <p>DIRECT MESSAGES</p>
-            <DirectMessagePopover afterChanges={getDirectMessages} />
+            <DirectMessagePopover afterChanges={getConversations} />
           </section>
 
           <section className="space-y-[2px] mt-2 px-2">
-            {directMessages?.map((directMessage) => (
-              <DirectMessageRow
-                directMessage={directMessage}
-                key={directMessage.id}
+            {conversations?.map((conversation) => (
+              <ConversationRow
+                conversation={conversation}
+                key={conversation.id}
               />
             ))}
           </section>
@@ -70,15 +70,11 @@ export default function SecondaryNav() {
   );
 }
 
-function DirectMessageRow({
-  directMessage,
-}: {
-  directMessage: DirectMessages;
-}) {
-  const { title, participants, id: directMessageId } = directMessage;
+function ConversationRow({ conversation }: { conversation: Conversations }) {
+  const { title, participants, id: conversationId } = conversation;
   const { user } = useUser();
   const pathname = usePathname();
-  const selected = pathname.includes(directMessageId);
+  const selected = pathname.includes(conversationId);
 
   const titleFallback = participants
     .filter((participant) => participant.user?.id !== user?.id)
@@ -91,10 +87,10 @@ function DirectMessageRow({
   return (
     <Link
       className={cn(
-        "flex items-center gap-2 hover:bg-page hover:cursor-pointer group rounded-sm h-14 overflow-hidden",
-        selected && "bg-page text-primary"
+        "flex items-center gap-2 hover:bg-page/50 hover:cursor-pointer group rounded-sm h-14 overflow-hidden",
+        selected && "bg-page text-primary hover:bg-page"
       )}
-      href={`/${directMessageId}`}
+      href={`/${conversationId}`}
     >
       {participants.length > 2 ? (
         <MultiAvatar

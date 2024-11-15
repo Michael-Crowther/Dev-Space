@@ -14,7 +14,7 @@ import { useDebounceValue } from "usehooks-ts";
 export default function FriendsPending() {
   const [search, setSearch] = useDebounceValue("", 300);
 
-  const { getFriendRequests } = useUser();
+  const { getFriendRequests, getFriends } = useUser();
 
   const {
     data: friendRequests,
@@ -54,6 +54,7 @@ export default function FriendsPending() {
                   afterChanges={() => {
                     refetch();
                     getFriendRequests();
+                    getFriends();
                   }}
                 />
               )

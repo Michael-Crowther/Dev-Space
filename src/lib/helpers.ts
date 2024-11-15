@@ -34,3 +34,18 @@ export function randomBoolean(): boolean {
 export async function delaySeconds(seconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
+
+export function arraysHaveSameElements(
+  arr1: { id: string }[],
+  arr2: { id: string }[]
+) {
+  if (arr1.length !== arr2.length) return false;
+
+  const ids1 = arr1.map((p) => p.id).sort();
+  const ids2 = arr2.map((p) => p.id).sort();
+
+  for (let i = 0; i < ids1.length; i++) {
+    if (ids1[i] !== ids2[i]) return false;
+  }
+  return true;
+}

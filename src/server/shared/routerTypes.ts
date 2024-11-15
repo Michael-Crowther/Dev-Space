@@ -10,6 +10,8 @@ export type UserProfile = RouterOutputs["base"]["user"]["getUser"];
 
 export type FriendRequests = RouterOutputs["base"]["user"]["friendRequests"];
 
-export type DirectMessages = ItemType<
-  RouterOutputs["base"]["user"]["directMessages"]
+export type Friends = RouterOutputs["base"]["user"]["allFriends"];
+
+export type Conversations = ItemType<
+  RouterOutputs["base"]["user"]["conversations"]
 >;

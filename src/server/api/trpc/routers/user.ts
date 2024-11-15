@@ -12,6 +12,7 @@ import { getHashedPassword, isPasswordMatch } from "@/server/utils/bcrypt";
 import { z } from "zod";
 import conversations from "@/server/db/schema/conversations";
 import conversationParticipants from "@/server/db/schema/conversationParticipants";
+import { arraysHaveSameElements } from "@/lib/helpers";
 
 export const userRouter = router({
   all: procedure.query(async () => {
@@ -346,7 +347,7 @@ export const userRouter = router({
       return { message: `'${friend.username}' has been removed as a friend` };
     }),
 
-  createDm: userProcedure()
+  createConversation: userProcedure()
     .input(z.object({ userIds: z.array(z.string().cuid2()) }))
     .mutation(async ({ input: { userIds }, ctx: { user } }) => {
       const participants = await db.query.users.findMany({
@@ -360,7 +361,36 @@ export const userRouter = router({
 
       const allParticipants = [...participants, user];
 
-      //check for exising DM. It's existing if allParticipants equals conversation's conversationParticiapnts join table
+      //check for existing conversation. Existing conversation is one
+      //in which all the participants in conversation equals allParticipants
+      const existingConversations = await db
+        .select({ id: conversations.id })
+        .from(conversations)
+        .innerJoin(
+          conversationParticipants,
+          eq(conversations.id, conversationParticipants.conversationId)
+        )
+        .where(eq(conversationParticipants.userId, user.id));
+
+      for (const { id: conversationId } of existingConversations) {
+        const participantsInConversation: { id: string }[] = [];
+
+        const participants = await db.query.conversationParticipants.findMany({
+          where: eq(conversationParticipants.conversationId, conversationId),
+        });
+
+        for (const participant of participants) {
+          if (participant.userId) {
+            participantsInConversation.push({ id: participant.userId });
+          }
+        }
+
+        if (
+          arraysHaveSameElements(participantsInConversation, allParticipants)
+        ) {
+          return { conversationId };
+        }
+      }
 
       await db.transaction(async (tx) => {
         const [conversation] = await tx
@@ -376,10 +406,15 @@ export const userRouter = router({
         }
       });
 
-      return { message: "Group chat was successfully created" };
+      return {
+        message:
+          allParticipants.length > 2
+            ? "Group chat was successfully created"
+            : "Direct message was successfully created",
+      };
     }),
 
-  directMessages: userProcedure().query(async ({ ctx: { user } }) => {
+  conversations: userProcedure().query(async ({ ctx: { user } }) => {
     return await db.query.conversations.findMany({
       columns: { id: true, title: true },
       with: {

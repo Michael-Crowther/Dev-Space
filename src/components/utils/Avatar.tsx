@@ -1,3 +1,4 @@
+"use client";
 import { Avatar as ShadAvatar, AvatarImage } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 import { useUser } from "../providers/UserProvider";
@@ -87,7 +88,7 @@ export function MultiAvatar({
   return (
     <div className="flex items-center min-w-11 ml-2">
       {profileImageUrl1 && (
-        <ShadAvatar className="z-10 size-8 mb-3">
+        <ShadAvatar className="z-10 size-7 mb-3">
           <AvatarImage
             src={profileImageUrl1}
             className={cn("transition-opacity duration-300")}
@@ -95,7 +96,7 @@ export function MultiAvatar({
         </ShadAvatar>
       )}
       {profileImageUrl2 && (
-        <ShadAvatar className="-ml-6 mt-4 z-20 size-9 border-[3px] overlap border-bgsecondary">
+        <ShadAvatar className="-ml-5 mt-2 z-20 size-8 border-[3px] overlap border-bgsecondary">
           <AvatarImage
             src={profileImageUrl2}
             className={cn("transition-opacity duration-300")}

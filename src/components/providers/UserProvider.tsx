@@ -1,6 +1,10 @@
 "use client";
 import { api } from "@/app/(app)/api/trpc/util";
-import { FriendRequests, UserProfile } from "@/server/shared/routerTypes";
+import {
+  FriendRequests,
+  Friends,
+  UserProfile,
+} from "@/server/shared/routerTypes";
 import {
   createContext,
   ReactNode,
@@ -17,6 +21,8 @@ type UserContext = {
   getUser: () => void;
   friendRequests: FriendRequests | undefined;
   getFriendRequests: () => void;
+  friends: Friends | undefined;
+  getFriends: () => void;
 };
 
 export const UserContext = createContext<UserContext | undefined>(undefined);
@@ -38,21 +44,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { data: friendRequests, refetch: getFriendRequests } =
     api.base.user.friendRequests.useQuery();
 
+  const { data: friends, refetch: getFriends } =
+    api.base.user.allFriends.useQuery({ search: "" });
+
   useEffect(() => {
     if (!sessionFetched) {
       getSession().then(() => {
         getUser();
         getFriendRequests();
+        getFriends();
       });
       setSessionFetched(true);
     }
-  }, [getUser, sessionFetched]);
+  }, [getUser, sessionFetched, getFriendRequests, getFriends]);
 
   useEffect(() => {
     if (userError) {
       router.push("/login");
     }
-  }, [userError]);
+  }, [userError, router]);
 
   if (!user || isLoading || status === "loading") {
     return <LoadingSpinner />;
@@ -60,7 +70,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user, getUser, friendRequests, getFriendRequests }}
+      value={{
+        user,
+        getUser,
+        friendRequests,
+        getFriendRequests,
+        friends,
+        getFriends,
+      }}
     >
       {children}
     </UserContext.Provider>
@@ -76,6 +93,20 @@ export function useUser() {
     );
   }
 
-  const { user, getUser, friendRequests, getFriendRequests } = context;
-  return { user, getUser, friendRequests, getFriendRequests };
+  const {
+    user,
+    getUser,
+    friendRequests,
+    getFriendRequests,
+    friends,
+    getFriends,
+  } = context;
+  return {
+    user,
+    getUser,
+    friendRequests,
+    getFriendRequests,
+    friends,
+    getFriends,
+  };
 }

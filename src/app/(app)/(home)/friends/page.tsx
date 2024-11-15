@@ -22,10 +22,7 @@ export default function Friends() {
     data: friends,
     refetch: getFriends,
     isLoading,
-  } = api.base.user.allFriends.useQuery(
-    { search },
-    { refetchOnMount: true, staleTime: 0 }
-  );
+  } = api.base.user.allFriends.useQuery({ search });
 
   if ((friends?.count === 0 || !friends) && !search) {
     return <NoResults title="No friends" delayRender />;

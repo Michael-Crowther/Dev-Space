@@ -12,6 +12,7 @@ import { Input } from "../ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export function DirectMessagePopover({
   afterChanges,
@@ -21,14 +22,21 @@ export function DirectMessagePopover({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useDebounceValue("", 300);
   const [checkedUserIds, setCheckedUserIds] = useState<string[]>([]);
+  const router = useRouter();
   const maxUsers = checkedUserIds.length > 4;
 
-  const { mutate: createDm } = api.base.user.createDm.useMutation({
-    onSuccess: (data) => {
-      toast({ description: data.message });
-      afterChanges();
-    },
-  });
+  const { mutate: createConversation } =
+    api.base.user.createConversation.useMutation({
+      onSuccess: (data) => {
+        if (data?.message) {
+          toast({ description: data.message });
+          afterChanges();
+        }
+        if (data?.conversationId) {
+          router.push(`/${data.conversationId}`);
+        }
+      },
+    });
 
   function handleUserSelect(userId: string, isChecked: boolean) {
     setCheckedUserIds((currentUsers) => {
@@ -122,7 +130,7 @@ export function DirectMessagePopover({
           <Button
             className="bg-brand-500 w-full text-white hover:bg-brand-600"
             onClick={() => {
-              createDm({ userIds: checkedUserIds });
+              createConversation({ userIds: checkedUserIds });
               setOpen(false);
             }}
             disabled={maxUsers}
