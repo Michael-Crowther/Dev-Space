@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
 import { friendRequests, friendships, users } from "@/server/db/schema";
 import { procedure, router, userProcedure } from "../trpc";
-import { and, eq, inArray, like, or, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, like, or, sql } from "drizzle-orm";
 import { LibsqlError } from "@libsql/client";
 import {
   passwordChangeSchema,
@@ -430,6 +430,7 @@ export const userRouter = router({
               },
             },
           },
+          orderBy: asc(eq(conversationParticipants.userId, user.id)),
         },
       },
       where: inArray(

@@ -19,7 +19,7 @@ export default function SecondaryNav() {
   const { friendRequests } = useUser();
 
   const { data: conversations, refetch: getConversations } =
-    api.base.user.conversations.useQuery();
+    api.base.user.conversations.useQuery(undefined);
 
   return (
     <div className="flex flex-col max-w-[310px]">
@@ -29,7 +29,7 @@ export default function SecondaryNav() {
         </Button>
       </PageHeader>
 
-      <div className="overflow-auto bg-bgsecondary h-full">
+      <div className="overflow-auto bg-bgsecondary h-full flex flex-col">
         <Link
           href="/friends"
           className="flex flex-col w-[310px] text-primary p-2"
@@ -87,7 +87,7 @@ function ConversationRow({ conversation }: { conversation: Conversations }) {
   return (
     <Link
       className={cn(
-        "flex items-center gap-2 hover:bg-page/50 hover:cursor-pointer group rounded-sm h-14 overflow-hidden",
+        "flex items-center gap-2 hover:bg-bgprofilenav hover:cursor-pointer group rounded-sm h-14 overflow-hidden",
         selected && "bg-page text-primary hover:bg-page"
       )}
       href={`/${conversationId}`}
@@ -96,6 +96,9 @@ function ConversationRow({ conversation }: { conversation: Conversations }) {
         <MultiAvatar
           profileImageUrl1={participants[0].user?.profileImageUrl}
           profileImageUrl2={participants[1].user?.profileImageUrl}
+          className={
+            selected ? "border-page" : "group-hover:border-bgprofilenav"
+          }
         />
       ) : (
         <div className="min-w-11 ml-2">

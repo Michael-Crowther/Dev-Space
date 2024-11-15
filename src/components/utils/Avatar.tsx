@@ -79,11 +79,13 @@ export function Avatar({
 type MultiAvatarProps = {
   profileImageUrl1: string | undefined;
   profileImageUrl2: string | undefined;
+  className?: string;
 };
 
 export function MultiAvatar({
   profileImageUrl1,
   profileImageUrl2,
+  className,
 }: MultiAvatarProps) {
   return (
     <div className="flex items-center min-w-11 ml-2">
@@ -96,7 +98,12 @@ export function MultiAvatar({
         </ShadAvatar>
       )}
       {profileImageUrl2 && (
-        <ShadAvatar className="-ml-5 mt-2 z-20 size-8 border-[3px] overlap border-bgsecondary">
+        <ShadAvatar
+          className={cn(
+            "-ml-5 mt-2 z-20 size-8 border-[3px] overlap border-bgsecondary",
+            className
+          )}
+        >
           <AvatarImage
             src={profileImageUrl2}
             className={cn("transition-opacity duration-300")}

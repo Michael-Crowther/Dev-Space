@@ -163,18 +163,19 @@ function FriendRow({
   const checked = checkedUserIds.includes(friendId);
 
   return (
-    <main>
-      <div className="flex items-center gap-1 hover:bg-page rounded-sm hover:cursor-pointer p-1">
-        <Avatar profileImageUrl={profileImageUrl} className="size-10 mr-1" />
-        <p className="text-primary">{displayName || username}</p>
-        <p className="text-muted-foreground text-sm">{username}</p>
-        <span className="flex-1" />
-        <Checkbox
-          className="mr-2"
-          checked={checked}
-          onCheckedChange={(checked) => onClick(!!checked)}
-        />
-      </div>
+    <main
+      className="flex items-center gap-1 hover:bg-page rounded-sm hover:cursor-pointer p-1"
+      onClick={() => onClick(!checked)}
+    >
+      <Avatar profileImageUrl={profileImageUrl} className="size-10 mr-1" />
+      <p className="text-primary">{displayName || username}</p>
+      <p className="text-muted-foreground text-sm">{username}</p>
+      <span className="flex-1" />
+      <Checkbox
+        className="mr-2"
+        checked={checked}
+        onCheckedChange={(checked) => onClick(!!checked)}
+      />
     </main>
   );
 }

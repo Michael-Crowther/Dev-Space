@@ -79,12 +79,14 @@ export function SettingsNav() {
 
           return (
             filteredButtons.length > 0 && (
-              <SettingsSection
-                key={header}
-                header={header}
-                buttons={filteredButtons}
-                pathname={pathname}
-              />
+              <div className="border-b">
+                <SettingsSection
+                  key={header}
+                  header={header}
+                  buttons={filteredButtons}
+                  pathname={pathname}
+                />
+              </div>
             )
           );
         })}
@@ -102,7 +104,7 @@ type SettingsSectionProps = {
 
 function SettingsSection({ header, buttons, pathname }: SettingsSectionProps) {
   return (
-    <div className=" border-b py-2">
+    <div className="py-2">
       {header && (
         <p className="text-muted-foreground text-xs pl-3 pb-2 mt-1">{header}</p>
       )}

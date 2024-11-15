@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/utils/PageHeader";
 import { NoResults } from "@/components/utils/NoResults";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { conversationParticipants, conversations } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { redirect } from "next/navigation";
@@ -53,6 +53,7 @@ export default async function Page({
         },
       },
     },
+    orderBy: asc(eq(conversationParticipants.userId, session?.user.id)),
   });
 
   const title =
