@@ -1,12 +1,10 @@
-import { PageHeader } from "@/components/utils/PageHeader";
 import { NoResults } from "@/components/utils/NoResults";
 import { and, asc, eq } from "drizzle-orm";
 import { conversationParticipants, conversations } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { redirect } from "next/navigation";
 import { auth } from "../../../../../auth";
-import { PrettyObject } from "@/components/utils/PrettyObject";
-import { Avatar, MultiAvatar } from "@/components/utils/Avatar";
+import PageComponents from "./components";
 
 export default async function Page({
   params,
@@ -50,6 +48,7 @@ export default async function Page({
           username: true,
           displayName: true,
           profileImageUrl: true,
+          createdAt: true,
         },
       },
     },
@@ -66,27 +65,5 @@ export default async function Page({
       )
       .join(", ");
 
-  return (
-    <>
-      <PageHeader className="flex items-center">
-        {participants.length > 2 ? (
-          <div className="mr-2 mt-1">
-            <MultiAvatar
-              profileImageUrl1={participants[0].user?.profileImageUrl}
-              profileImageUrl2={participants[1].user?.profileImageUrl}
-            />
-          </div>
-        ) : (
-          <div className="min-w-11 ml-2">
-            <Avatar
-              profileImageUrl={participants[0].user?.profileImageUrl}
-              className="size-8"
-            />
-          </div>
-        )}
-        <p>{title}</p>
-      </PageHeader>
-      <PrettyObject>{conversation}</PrettyObject>
-    </>
-  );
+  return <PageComponents participants={participants} title={title} />;
 }

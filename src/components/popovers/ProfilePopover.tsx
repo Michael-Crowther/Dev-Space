@@ -10,8 +10,6 @@ export function ProfilePopover() {
   const { user } = useUser();
   const { displayName, username, createdAt } = user;
 
-  const formattedDate = format(new Date(createdAt), "MMM dd, yyyy");
-
   return (
     <Popover>
       <PopoverTrigger className="w-full" asChild>
@@ -32,7 +30,9 @@ export function ProfilePopover() {
           <div className="flex flex-col text-sm space-y-1">
             <p className="font-bold text-2xl">{displayName || username}</p>
             <p className="text-sm">{username}</p>
-            <p className="text-muted-foreground">Registered {formattedDate}</p>
+            <p className="text-muted-foreground">
+              Registered {format(new Date(createdAt), "MMM dd, yyyy")}
+            </p>
           </div>
         </section>
         <section>

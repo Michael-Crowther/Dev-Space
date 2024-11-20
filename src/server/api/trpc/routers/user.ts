@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
 import { friendRequests, friendships, users } from "@/server/db/schema";
 import { procedure, router, userProcedure } from "../trpc";
-import { and, asc, eq, inArray, like, or, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, like, notInArray, or, sql } from "drizzle-orm";
 import { LibsqlError } from "@libsql/client";
 import {
   passwordChangeSchema,
@@ -264,7 +264,14 @@ export const userRouter = router({
     }),
 
   allFriends: userProcedure()
-    .input(z.object({ search: z.string() }).optional())
+    .input(
+      z
+        .object({
+          search: z.string(),
+          conversationId: z.string().cuid2().nullish(),
+        })
+        .optional()
+    )
     .query(async ({ input, ctx: { user } }) => {
       const friends = await db
         .select({
@@ -294,7 +301,26 @@ export const userRouter = router({
             or(
               eq(friendships.userId1, user.id),
               eq(friendships.userId2, user.id)
-            )
+            ),
+            input?.conversationId
+              ? notInArray(
+                  sql<string>`
+                    CASE 
+                      WHEN ${friendships.userId1} = ${user.id} THEN ${friendships.userId2}
+                      ELSE ${friendships.userId1}
+                    END
+                  `,
+                  db
+                    .select({ userId: conversationParticipants.userId })
+                    .from(conversationParticipants)
+                    .where(
+                      eq(
+                        conversationParticipants.conversationId,
+                        input.conversationId
+                      )
+                    )
+                )
+              : undefined
           )
         );
 
@@ -392,8 +418,9 @@ export const userRouter = router({
         }
       }
 
+      let conversation: { id: string } = { id: "" };
       await db.transaction(async (tx) => {
-        const [conversation] = await tx
+        [conversation] = await tx
           .insert(conversations)
           .values({})
           .returning({ id: conversations.id });
@@ -407,11 +434,39 @@ export const userRouter = router({
       });
 
       return {
+        conversationId: conversation.id,
         message:
           allParticipants.length > 2
             ? "Group chat was successfully created"
             : "Direct message was successfully created",
       };
+    }),
+
+  updateConversation: userProcedure()
+    .input(
+      z.object({
+        userIds: z.array(z.string().cuid2()),
+        conversationId: z.string().cuid2().nullish(),
+      })
+    )
+    .mutation(async ({ input: { userIds, conversationId } }) => {
+      const participants = await db.query.users.findMany({
+        where: inArray(users.id, userIds),
+        columns: {
+          id: true,
+          username: true,
+          displayName: true,
+        },
+      });
+
+      for (const participant of participants) {
+        await db.insert(conversationParticipants).values({
+          conversationId,
+          userId: participant.id,
+        });
+      }
+
+      return { message: "Users successfully added to chat" };
     }),
 
   conversations: userProcedure().query(async ({ ctx: { user } }) => {

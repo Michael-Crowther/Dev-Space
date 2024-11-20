@@ -1,6 +1,7 @@
 "use client";
 import { api } from "@/app/(app)/api/trpc/util";
 import {
+  Conversations,
   FriendRequests,
   Friends,
   UserProfile,
@@ -23,6 +24,8 @@ type UserContext = {
   getFriendRequests: () => void;
   friends: Friends | undefined;
   getFriends: () => void;
+  conversations: Conversations | undefined;
+  getConversations: () => void;
 };
 
 export const UserContext = createContext<UserContext | undefined>(undefined);
@@ -46,6 +49,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const { data: friends, refetch: getFriends } =
     api.base.user.allFriends.useQuery({ search: "" });
+
+  const { data: conversations, refetch: getConversations } =
+    api.base.user.conversations.useQuery();
 
   useEffect(() => {
     if (!sessionFetched) {
@@ -77,6 +83,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         getFriendRequests,
         friends,
         getFriends,
+        conversations,
+        getConversations,
       }}
     >
       {children}
@@ -100,6 +108,8 @@ export function useUser() {
     getFriendRequests,
     friends,
     getFriends,
+    conversations,
+    getConversations,
   } = context;
   return {
     user,
@@ -108,5 +118,7 @@ export function useUser() {
     getFriendRequests,
     friends,
     getFriends,
+    conversations,
+    getConversations,
   };
 }

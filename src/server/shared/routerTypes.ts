@@ -14,4 +14,4 @@ export type Friends = RouterOutputs["base"]["user"]["allFriends"];
 
 export type Conversations = ItemType<
   RouterOutputs["base"]["user"]["conversations"]
->;
+>[];

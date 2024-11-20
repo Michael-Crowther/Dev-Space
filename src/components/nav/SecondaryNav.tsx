@@ -1,5 +1,5 @@
 "use client";
-import { Contact } from "lucide-react";
+import { Contact, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { ProfileNav } from "./ProfileNav";
 import Link from "next/link";
@@ -7,19 +7,17 @@ import { usePathname } from "next/navigation";
 import { PageHeader } from "../utils/PageHeader";
 import { Badge } from "../ui/badge";
 import { useUser } from "../providers/UserProvider";
-import { api } from "@/app/(app)/api/trpc/util";
 import { DirectMessagePopover } from "../popovers/DirectMessagePopover";
 import { Conversations } from "@/server/shared/routerTypes";
 import { Avatar, MultiAvatar } from "../utils/Avatar";
 import { cn } from "@/lib/utils";
+import Tooltip from "../ui/tooltip";
+import { PopoverTrigger } from "../ui/popover";
 
 export default function SecondaryNav() {
   const pathname = usePathname();
   const selected = pathname.startsWith("/friends");
-  const { friendRequests } = useUser();
-
-  const { data: conversations, refetch: getConversations } =
-    api.base.user.conversations.useQuery(undefined);
+  const { conversations, getConversations, friendRequests } = useUser();
 
   return (
     <div className="flex flex-col max-w-[310px]">
@@ -51,7 +49,15 @@ export default function SecondaryNav() {
         <div className="h-full bg-bgsecondary pt-2 text-xs text-muted-foreground flex flex-col">
           <section className="flex justify-between items-center px-5">
             <p>DIRECT MESSAGES</p>
-            <DirectMessagePopover afterChanges={getConversations} />
+            <DirectMessagePopover afterChanges={getConversations}>
+              <Tooltip title="Create DM">
+                <PopoverTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <Plus className="size-4" />
+                  </Button>
+                </PopoverTrigger>
+              </Tooltip>
+            </DirectMessagePopover>
           </section>
 
           <section className="space-y-[2px] mt-2 px-2">
@@ -70,7 +76,7 @@ export default function SecondaryNav() {
   );
 }
 
-function ConversationRow({ conversation }: { conversation: Conversations }) {
+function ConversationRow({ conversation }: { conversation: Conversations[0] }) {
   const { title, participants, id: conversationId } = conversation;
   const { user } = useUser();
   const pathname = usePathname();

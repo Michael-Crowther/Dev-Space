@@ -1,7 +1,5 @@
-import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
-import Tooltip from "../ui/tooltip";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent } from "../ui/popover";
 import { useDebounceValue } from "usehooks-ts";
 import { LoadingSpinner } from "../utils/LoadingSpinner";
 import { NoResults } from "../utils/NoResults";
@@ -9,32 +7,54 @@ import { api } from "@/app/(app)/api/trpc/util";
 import { Avatar } from "../utils/Avatar";
 import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
+type DirectMessagesPopoverProps = {
+  afterChanges?: () => void;
+  children: ReactNode;
+  participants?: number;
+  conversationId?: string | null;
+};
+
 export function DirectMessagePopover({
   afterChanges,
-}: {
-  afterChanges: () => void;
-}) {
+  children,
+  participants = 0,
+  conversationId,
+}: DirectMessagesPopoverProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useDebounceValue("", 300);
   const [checkedUserIds, setCheckedUserIds] = useState<string[]>([]);
   const router = useRouter();
-  const maxUsers = checkedUserIds.length > 4;
+  const MAX_USERS = 5;
+  const totalParticipants =
+    participants + checkedUserIds.length + (participants === 0 ? 1 : 0);
+
+  const usersToAdd = MAX_USERS - totalParticipants;
+  const hasMaxUsers = totalParticipants > MAX_USERS;
 
   const { mutate: createConversation } =
     api.base.user.createConversation.useMutation({
       onSuccess: (data) => {
         if (data?.message) {
           toast({ description: data.message });
-          afterChanges();
+          afterChanges && afterChanges();
         }
         if (data?.conversationId) {
           router.push(`/${data.conversationId}`);
         }
+      },
+    });
+
+  const { mutate: updateConversation } =
+    api.base.user.updateConversation.useMutation({
+      onSuccess: (data) => {
+        toast({ description: data.message });
+        getFriends();
+        afterChanges && afterChanges();
       },
     });
 
@@ -56,7 +76,8 @@ export function DirectMessagePopover({
     data: friends,
     refetch: getFriends,
     isLoading,
-  } = api.base.user.allFriends.useQuery({ search });
+  } = api.base.user.allFriends.useQuery({ search, conversationId });
+
   return (
     <Popover
       open={open}
@@ -66,13 +87,7 @@ export function DirectMessagePopover({
         setCheckedUserIds([]);
       }}
     >
-      <Tooltip title="Create DM">
-        <PopoverTrigger asChild>
-          <Button size="icon" variant="ghost">
-            <Plus className="size-4" />
-          </Button>
-        </PopoverTrigger>
-      </Tooltip>
+      {children}
       <PopoverContent
         className="w-[450px]"
         onCloseAutoFocus={(e) => e.preventDefault()}
@@ -82,13 +97,13 @@ export function DirectMessagePopover({
           <p
             className={cn(
               "text-muted-foreground text-xs mb-3",
-              maxUsers && "text-destructive"
+              hasMaxUsers && "text-destructive"
             )}
           >
-            {maxUsers
-              ? "This group has a max of 5 participants."
-              : `You can add ${4 - checkedUserIds.length} more ${
-                  4 - checkedUserIds.length === 1 ? "friend" : "friends"
+            {hasMaxUsers
+              ? `This group has a max of ${MAX_USERS} participants.`
+              : `You can add ${usersToAdd} more ${
+                  usersToAdd === 1 ? "friend" : "friends"
                 }.`}
           </p>
           <Input
@@ -130,12 +145,19 @@ export function DirectMessagePopover({
           <Button
             className="bg-brand-500 w-full text-white hover:bg-brand-600"
             onClick={() => {
-              createConversation({ userIds: checkedUserIds });
+              {
+                participants === 0
+                  ? createConversation({ userIds: checkedUserIds })
+                  : updateConversation({
+                      userIds: checkedUserIds,
+                      conversationId,
+                    });
+              }
               setOpen(false);
             }}
-            disabled={maxUsers}
+            disabled={hasMaxUsers || checkedUserIds.length === 0}
           >
-            Create DM
+            {participants === 0 ? "Create DM" : "Add Members"}
           </Button>
         </footer>
       </PopoverContent>
