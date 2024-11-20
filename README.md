@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-This is a Discord clone hosted on Vercel at <ins>www.dev--space.com<ins
+This is a Discord clone hosted on Vercel at <ins>www.dev--space.com<ins>
 
 The purpose of this project is to demonstrate my abilities as a full stack engineer. The following stack includes:
 
