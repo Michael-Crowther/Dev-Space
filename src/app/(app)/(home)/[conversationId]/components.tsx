@@ -9,7 +9,7 @@ import {
   Users,
   Video,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/utils/PageHeader";
 import { format, isToday } from "date-fns";
 import { DirectMessagePopover } from "@/components/popovers/DirectMessagePopover";
@@ -185,12 +185,27 @@ function ConversationContent({
     },
   });
 
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <section className="flex w-full flex-col justify-between border border-red-500">
-      <div className="flex flex-col items-start justify-start p-3 gap-3 overflow-auto">
-        {messages?.map((message) => (
-          <MessageContainer key={message.id} message={message} />
-        ))}
+    <section className="flex w-full flex-col justify-between">
+      <div
+        ref={messagesContainerRef}
+        className="flex flex-col items-start justify-start p-3 gap-3 overflow-auto"
+      >
+        {messages
+          ?.slice()
+          .reverse()
+          .map((message) => (
+            <MessageContainer key={message.id} message={message} />
+          ))}
       </div>
       <div className="w-full p-3 pt-0 bottom-0 sticky">
         <Input
@@ -219,12 +234,12 @@ function MessageContainer({ message }: { message: Messages }) {
   }
 
   return (
-    <div key={id} className="flex gap-2 items-center">
+    <div key={id} className="flex gap-2 items-center max-w-full">
       <Avatar
         profileImageUrl={createdByUser.profileImageUrl}
         className="size-8"
       />
-      <section className="flex flex-col">
+      <section className="flex flex-col overflow-hidden mr-10">
         <div className="flex items-center gap-2">
           <p className="text-[14px]">
             {createdByUser.displayName || createdByUser.username}
@@ -233,7 +248,7 @@ function MessageContainer({ message }: { message: Messages }) {
             {formatCustomDate(createdAt)}
           </p>
         </div>
-        <p className="text-[13px] flex text-wrap">{content}</p>
+        <p className="text-[13px] break-words">{content}</p>
       </section>
     </div>
   );

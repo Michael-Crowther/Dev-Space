@@ -7,7 +7,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
     <>
       <PrimaryNav />
       <SecondaryNav />
-      <div className="flex flex-col w-full bg-page text-primary h-full">
+      <div className="flex flex-col w-full bg-page text-primary h-full overflow-x-hidden">
         {children}
       </div>
     </>

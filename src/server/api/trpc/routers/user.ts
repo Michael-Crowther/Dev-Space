@@ -6,7 +6,17 @@ import {
   users,
 } from "@/server/db/schema";
 import { procedure, router, userProcedure } from "../trpc";
-import { and, asc, eq, inArray, like, notInArray, or, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  inArray,
+  like,
+  notInArray,
+  or,
+  sql,
+} from "drizzle-orm";
 import { LibsqlError } from "@libsql/client";
 import {
   passwordChangeSchema,
@@ -529,6 +539,8 @@ export const userRouter = router({
             },
           },
         },
+        orderBy: desc(messages.createdAt),
+        limit: 20,
       });
     }),
 });
