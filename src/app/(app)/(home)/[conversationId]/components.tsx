@@ -11,21 +11,26 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { PageHeader } from "@/components/utils/PageHeader";
-import { format } from "date-fns";
+import { format, isToday } from "date-fns";
 import { DirectMessagePopover } from "@/components/popovers/DirectMessagePopover";
 import { PopoverTrigger } from "@/components/ui/popover";
 import { Participants } from "@/types";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/components/providers/UserProvider";
+import { Input } from "@/components/ui/input";
+import { api } from "../../api/trpc/util";
+import { Messages } from "@/server/shared/routerTypes";
 
 type PageComponentsType = {
   participants: Participants;
   title: string;
+  conversationId: string;
 };
 
 export default function PageComponents({
   participants,
   title,
+  conversationId,
 }: PageComponentsType) {
   const [showSidebar, setShowSidebar] = useState(true);
   const router = useRouter();
@@ -36,7 +41,7 @@ export default function PageComponents({
   const secondParticipant = participants[1].user;
 
   return (
-    <>
+    <div className="min-h-full flex flex-col">
       <PageHeader className="flex items-center">
         {isGroupChat ? (
           <div className="mr-2 mt-1">
@@ -114,10 +119,9 @@ export default function PageComponents({
           )}
         </section>
       </PageHeader>
-      <main className="h-full flex">
-        <section className="flex items-center justify-center w-full">
-          Messages go here
-        </section>
+
+      <main className="overflow-auto flex h-screen">
+        <ConversationContent conversationId={conversationId} title={title} />
 
         {isGroupChat && showSidebar && (
           <section className="w-1/4 bg-secondary p-4 text-muted-foreground text-sm">
@@ -157,6 +161,80 @@ export default function PageComponents({
           </div>
         )}
       </main>
-    </>
+    </div>
+  );
+}
+
+type ConversationContentProps = {
+  conversationId: string;
+  title: string;
+};
+
+function ConversationContent({
+  conversationId,
+  title,
+}: ConversationContentProps) {
+  const [message, setMessage] = useState("");
+
+  const { data: messages, refetch: getMessages } =
+    api.base.user.messages.useQuery({ conversationId });
+
+  const { mutate: createMessage } = api.base.user.createMessage.useMutation({
+    onSuccess: () => {
+      getMessages();
+    },
+  });
+
+  return (
+    <section className="flex w-full flex-col justify-between border border-red-500">
+      <div className="flex flex-col items-start justify-start p-3 gap-3 overflow-auto">
+        {messages?.map((message) => (
+          <MessageContainer key={message.id} message={message} />
+        ))}
+      </div>
+      <div className="w-full p-3 pt-0 bottom-0 sticky">
+        <Input
+          className="bg-bgpage w-full h-12 border-none shadow-sm"
+          placeholder={`Message ${title}`}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter")
+              createMessage({ content: message, conversationId });
+          }}
+        />
+      </div>
+    </section>
+  );
+}
+
+function MessageContainer({ message }: { message: Messages }) {
+  const { id, createdByUser, content, createdAt } = message;
+
+  function formatCustomDate(date: Date) {
+    if (isToday(date)) {
+      return `Today at ${format(date, "h:mm a")}`;
+    } else {
+      return format(date, "MMM d, yyyy 'at' h:mm a");
+    }
+  }
+
+  return (
+    <div key={id} className="flex gap-2 items-center">
+      <Avatar
+        profileImageUrl={createdByUser.profileImageUrl}
+        className="size-8"
+      />
+      <section className="flex flex-col">
+        <div className="flex items-center gap-2">
+          <p className="text-[14px]">
+            {createdByUser.displayName || createdByUser.username}
+          </p>
+          <p className="text-[12px] text-muted-foreground">
+            {formatCustomDate(createdAt)}
+          </p>
+        </div>
+        <p className="text-[13px] flex text-wrap">{content}</p>
+      </section>
+    </div>
   );
 }

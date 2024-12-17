@@ -1,5 +1,10 @@
 import { db } from "@/server/db";
-import { friendRequests, friendships, users } from "@/server/db/schema";
+import {
+  friendRequests,
+  friendships,
+  messages,
+  users,
+} from "@/server/db/schema";
 import { procedure, router, userProcedure } from "../trpc";
 import { and, asc, eq, inArray, like, notInArray, or, sql } from "drizzle-orm";
 import { LibsqlError } from "@libsql/client";
@@ -497,4 +502,33 @@ export const userRouter = router({
       ),
     });
   }),
+
+  createMessage: userProcedure()
+    .input(
+      z.object({ content: z.string(), conversationId: z.string().cuid2() })
+    )
+    .mutation(async ({ ctx: { user }, input: { content, conversationId } }) => {
+      await db
+        .insert(messages)
+        .values({ content, conversationId, createdByUserId: user.id });
+    }),
+
+  messages: userProcedure()
+    .input(z.object({ conversationId: z.string().cuid2() }))
+    .query(async ({ input: { conversationId } }) => {
+      return await db.query.messages.findMany({
+        where: eq(messages.conversationId, conversationId),
+        with: {
+          createdByUser: {
+            columns: {
+              id: true,
+              name: true,
+              profileImageUrl: true,
+              username: true,
+              displayName: true,
+            },
+          },
+        },
+      });
+    }),
 });

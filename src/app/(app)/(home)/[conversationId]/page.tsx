@@ -65,5 +65,11 @@ export default async function Page({
       )
       .join(", ");
 
-  return <PageComponents participants={participants} title={title} />;
+  return (
+    <PageComponents
+      participants={participants}
+      title={title}
+      conversationId={conversationId}
+    />
+  );
 }

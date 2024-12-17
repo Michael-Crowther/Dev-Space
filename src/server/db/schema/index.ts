@@ -10,4 +10,4 @@ export {
   default as conversationParticipants,
   conversationParticipantRelations,
 } from "./conversationParticipants";
-export { default as messages } from "./messages";
+export { default as messages, messagesRelations } from "./messages";

@@ -2,6 +2,7 @@ import { text, sqliteTable, integer } from "drizzle-orm/sqlite-core";
 import { createId } from "@paralleldrive/cuid2";
 import users from "./users";
 import conversations from "./conversations";
+import { relations } from "drizzle-orm";
 
 const messages = sqliteTable("messages", {
   id: text("id", { length: 128 })
@@ -21,5 +22,16 @@ const messages = sqliteTable("messages", {
     .notNull()
     .$default(() => new Date()),
 });
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  conversation: one(conversations, {
+    fields: [messages.conversationId],
+    references: [conversations.id],
+  }),
+  createdByUser: one(users, {
+    fields: [messages.createdByUserId],
+    references: [users.id],
+  }),
+}));
 
 export default messages;

@@ -26,7 +26,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${whitneysemibold.className} antialiased flex h-screen`}
+        className={`${whitneysemibold.className} antialiased flex h-screen `}
       >
         <Toaster />
         <QueryProvider>
